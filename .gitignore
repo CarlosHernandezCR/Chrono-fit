@@ -1,0 +1,11 @@
+/Chrono_FitApp/app/src/main/res/mipmap-hdpi
+/Chrono_fit-App/.gradle
+/Chrono_fit-App/.idea
+/Chrono_FitApp/.idea
+Chrono_FitApp/app/proguard-rules.pro
+/Chrono_FitApp/app/src/androidTest
+/Chrono_FitApp/app/src/test
+Chrono_FitApp/gradle/wrapper/gradle-wrapper.jar
+Chrono_FitApp/gradle/wrapper/gradle-wrapper.properties
+Chrono_FitApp/gradlew
+Chrono_FitApp/gradlew.bat
