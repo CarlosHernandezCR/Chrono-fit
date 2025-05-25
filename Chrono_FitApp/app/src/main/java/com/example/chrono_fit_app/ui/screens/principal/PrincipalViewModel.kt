@@ -1,22 +1,18 @@
 package com.example.chrono_fit_app.ui.screens.principal
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.example.chrono_fit_app.common.Constants
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-@HiltViewModel
-class PrincipalViewModel @Inject constructor(
-) : ViewModel() {
+class PrincipalViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(PrincipalContract.PrincipalState())
     val uiState: StateFlow<PrincipalContract.PrincipalState> = _uiState.asStateFlow()
     private var timerJob: Job? = null
@@ -28,7 +24,7 @@ class PrincipalViewModel @Inject constructor(
             }
 
             is PrincipalContract.PrincipalEvent.OnTiempoDescansoChanged -> {
-                _uiState.value = _uiState.value.copy(tiempoDescanso = event.nuevoValor)
+                _uiState.value = _uiState.value.copy(segundosDescanso = event.nuevoValor)
             }
 
             is PrincipalContract.PrincipalEvent.OnNumeroSeriesChanged -> {
@@ -39,15 +35,20 @@ class PrincipalViewModel @Inject constructor(
 
             is PrincipalContract.PrincipalEvent.Stop -> {stop()}
             is PrincipalContract.PrincipalEvent.MensajeMostrado -> _uiState.update { it.copy(mensaje = null) }
+            PrincipalContract.PrincipalEvent.Pause -> {pause()}
         }
     }
 
+    private fun pause() {
+        timerJob?.cancel()
+        _uiState.update { it.copy(pausado = true) }
+    }
     private fun start() {
         if (timerJob?.isActive == true) return
 
         timerJob = viewModelScope.launch {
             val actividad = _uiState.value.tiempoActividad
-            val descanso = _uiState.value.tiempoDescanso
+            val descanso = _uiState.value.segundosDescanso
             val series = _uiState.value.numeroSeries
 
             if (actividad <= 0 || descanso < 0 || series <= 0) {
@@ -83,7 +84,9 @@ class PrincipalViewModel @Inject constructor(
         timerJob?.cancel()
         _uiState.update {
             it.copy(
-                tiempoRestante = 0,
+                tiempoRestante = it.segundosSerie,
+                tiempoActividad = 0,
+                terminado = true,
                 empezado = false,
                 pausado = false,
                 mensaje = Constants.ENTRENAMIENTO_DETENIDO
