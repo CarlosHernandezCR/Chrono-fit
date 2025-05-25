@@ -21,22 +21,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chrono_fit_app.common.Constants.DESCANSO
 import com.example.chrono_fit_app.common.Constants.MAS
 import com.example.chrono_fit_app.common.Constants.MENOS
 import com.example.chrono_fit_app.common.Constants.NUMERO_DE_SERIES
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_DE_DESCANSO
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
-import com.example.chrono_fit_app.common.Constants.TIEMPO_RESTANTE_DE_LA_SERIE
 import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL_TRANSCURRIDO
 import com.example.chrono_fit_app.common.Constants.TITULO
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun PrincipalActivity (
+fun PrincipalActivity(
     modifier: Modifier = Modifier
-){
+) {
     val viewModel: PrincipalViewModel = viewModel()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -49,36 +46,49 @@ fun PrincipalActivity (
         }
     }
     val uiState by viewModel.uiState.collectAsState()
+
     LaunchedEffect(uiState.mensaje) {
         uiState.mensaje?.let {
             showSnackbar(it)
             viewModel.handleEvent(PrincipalContract.PrincipalEvent.MensajeMostrado)
         }
     }
+
     PantallaPrincipal(
-        tiempoActividad = uiState.tiempoActividad,
-        tiempoDescanso = uiState.segundosDescanso,
+        tiempoActividadTotal = uiState.tiempoActividadTotal,
+        segundosSerie = uiState.segundosSerie,
+        segundosSerieRestantes = uiState.segundosSerieRestantes,
+        segundosDescanso = uiState.segundosDescanso,
+        segundosDescansoRestantes = uiState.segundosDescansoRestantes,
         numeroSeries = uiState.numeroSeries,
-        tiempoRestante = uiState.tiempoRestante,
+        numeroSeriesRestantes = uiState.numeroSeriesRestantes,
         empezado = uiState.empezado,
         pausado = uiState.pausado,
+        enDescanso = uiState.enDescanso,
         terminado = uiState.terminado,
         onStartClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Start) },
         onStopClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Stop) },
-        onPauseClick = {viewModel.handleEvent(PrincipalContract.PrincipalEvent.Stop)},
+        onPauseClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Pause) },
+        onResumeClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Resume) },
         OnTiempoActividadChanged = {
             viewModel.handleEvent(
-                PrincipalContract.PrincipalEvent.OnTiempoActividadChanged(it)
+                PrincipalContract.PrincipalEvent.OnTiempoActividadChanged(
+                    it
+                )
             )
         },
         OnTiempoDescansoChanged = {
             viewModel.handleEvent(
-                PrincipalContract.PrincipalEvent.OnTiempoDescansoChanged(it)
+                PrincipalContract.PrincipalEvent.OnTiempoDescansoChanged(
+                    it
+                )
             )
         },
         OnNumeroSeriesChanged = {
             viewModel.handleEvent(
-                PrincipalContract.PrincipalEvent.OnNumeroSeriesChanged(it)
+                PrincipalContract.PrincipalEvent.OnNumeroSeriesChanged(
+                    it
+                )
             )
         },
         modifier = modifier
@@ -87,16 +97,21 @@ fun PrincipalActivity (
 
 @Composable
 fun PantallaPrincipal(
-    tiempoActividad: Int,
-    tiempoDescanso: Int,
+    tiempoActividadTotal: Int,
+    segundosSerie: Int,
+    segundosSerieRestantes: Int,
+    segundosDescanso: Int,
+    segundosDescansoRestantes: Int,
     numeroSeries: Int,
-    tiempoRestante: Int,
+    numeroSeriesRestantes: Int,
     empezado: Boolean,
     pausado: Boolean,
+    enDescanso: Boolean,
     terminado: Boolean,
     onStartClick: () -> Unit,
     onStopClick: () -> Unit,
     onPauseClick: () -> Unit,
+    onResumeClick: () -> Unit,
     OnTiempoActividadChanged: (Int) -> Unit,
     OnTiempoDescansoChanged: (Int) -> Unit,
     OnNumeroSeriesChanged: (Int) -> Unit,
@@ -115,40 +130,74 @@ fun PantallaPrincipal(
 
         Text(TIEMPO_TOTAL_TRANSCURRIDO, style = MaterialTheme.typography.bodyLarge)
         Text(
-            text = formatSecondsToTime(180 - tiempoRestante),
+            text = formatSecondsToTime(tiempoActividadTotal),
             style = MaterialTheme.typography.displayMedium
         )
 
-        Text(TIEMPO_RESTANTE_DE_LA_SERIE, style = MaterialTheme.typography.bodyLarge)
+        Text(SEGUNDOS_POR_SET, style = MaterialTheme.typography.bodyLarge)
         Text(
-            text = formatSecondsToTime(tiempoRestante),
+            text = if (empezado && !enDescanso) {
+                formatSecondsToTime(segundosSerieRestantes)
+            } else {
+                formatSecondsToTime(segundosSerie)
+            },
             style = MaterialTheme.typography.displayLarge
         )
 
-        Text(DESCANSO, style = MaterialTheme.typography.bodyLarge)
+        Text(SEGUNDOS_DE_DESCANSO, style = MaterialTheme.typography.bodyLarge)
         Text(
-            text = formatSecondsToTime(tiempoDescanso),
+            text = if (empezado && enDescanso) {
+                formatSecondsToTime(segundosDescansoRestantes)
+            } else {
+                formatSecondsToTime(segundosDescanso)
+            },
             style = MaterialTheme.typography.displayMedium
         )
 
-        NumberSelector(SEGUNDOS_POR_SET, tiempoActividad, OnTiempoActividadChanged, min = 60)
-        NumberSelector(SEGUNDOS_DE_DESCANSO, tiempoDescanso, OnTiempoDescansoChanged, min = 0)
-        NumberSelector(NUMERO_DE_SERIES, numeroSeries, OnNumeroSeriesChanged, min = 1)
+        NumberSelector(
+            SEGUNDOS_POR_SET,
+            segundosSerie,
+            OnTiempoActividadChanged,
+            enabled = !empezado,
+            min = 1
+        )
+        NumberSelector(
+            SEGUNDOS_DE_DESCANSO,
+            segundosDescanso,
+            OnTiempoDescansoChanged,
+            enabled = !empezado,
+            min = 0
+        )
+        NumberSelector(
+            NUMERO_DE_SERIES,
+            numeroSeries,
+            OnNumeroSeriesChanged,
+            enabled = !empezado,
+            min = 1
+        )
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(onClick = onStopClick, enabled = empezado && !terminado) {
+            Button(onClick = onStopClick, enabled = empezado) {
                 Text("■")
             }
-            Button(onClick = onStartClick, enabled = !empezado || terminado) {
-                Text("▶")
-            }
-            Button(onClick = onPauseClick, enabled = !pausado && !terminado) {
-                Text("Ⅱ")
+            if (!empezado || terminado) {
+                Button(onClick = onStartClick) {
+                    Text("▶")
+                }
+            } else if (empezado && !pausado && !terminado) {
+                Button(onClick = onPauseClick) {
+                    Text("Ⅱ")
+                }
+            } else if (empezado && pausado && !terminado) {
+                Button(onClick = onResumeClick) {
+                    Text("►")
+                }
             }
         }
+        Text("Series restantes: $numeroSeriesRestantes / $numeroSeries")
     }
 }
 
@@ -158,6 +207,7 @@ fun NumberSelector(
     value: Int,
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     step: Int = 1,
     min: Int,
     max: Int = Int.MAX_VALUE
@@ -170,7 +220,7 @@ fun NumberSelector(
         ) {
             Button(
                 onClick = { if (value > min) onValueChange(value - step) },
-                enabled = value > min
+                enabled = enabled && value > min
             ) {
                 Text(MENOS)
             }
@@ -180,7 +230,7 @@ fun NumberSelector(
             )
             Button(
                 onClick = { if (value < max) onValueChange(value + step) },
-                enabled = value < max
+                enabled = enabled && value < max
             ) {
                 Text(MAS)
             }
@@ -198,18 +248,23 @@ private fun formatSecondsToTime(seconds: Int): String {
 @Preview(showBackground = true)
 fun PantallaPrincipalPreview() {
     PantallaPrincipal(
-        tiempoActividad = 30,
-        tiempoDescanso = 20,
-        numeroSeries = 2,
-        tiempoRestante = 180,
+        tiempoActividadTotal = 0,
+        segundosSerie = 3,
+        segundosSerieRestantes = 3,
+        segundosDescanso = 3,
+        segundosDescansoRestantes = 3,
+        numeroSeries = 3,
+        numeroSeriesRestantes = 3,
         empezado = false,
         pausado = false,
+        enDescanso = false,
         terminado = false,
         onStartClick = {},
         onStopClick = {},
+        onPauseClick = {},
+        onResumeClick = {},
         OnTiempoActividadChanged = {},
         OnTiempoDescansoChanged = {},
-        OnNumeroSeriesChanged = {},
-        onPauseClick = {}
+        OnNumeroSeriesChanged = {}
     )
 }
