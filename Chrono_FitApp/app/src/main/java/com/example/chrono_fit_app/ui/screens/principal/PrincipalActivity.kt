@@ -21,15 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chrono_fit_app.common.Constants
+import com.example.chrono_fit_app.common.Constants.DESCANSO
 import com.example.chrono_fit_app.common.Constants.MAS
 import com.example.chrono_fit_app.common.Constants.MENOS
+import com.example.chrono_fit_app.common.Constants.NUMERO_DE_SERIES
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_DE_DESCANSO
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
-import com.example.chrono_fit_app.common.Constants.NUMERO_DE_SERIES
-import com.example.chrono_fit_app.common.Constants.PAUSE
-import com.example.chrono_fit_app.common.Constants.START
-import com.example.chrono_fit_app.common.Constants.STOP
+import com.example.chrono_fit_app.common.Constants.TIEMPO_RESTANTE_DE_LA_SERIE
+import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL_TRANSCURRIDO
+import com.example.chrono_fit_app.common.Constants.TITULO
 import kotlinx.coroutines.launch
 
 
@@ -108,35 +108,49 @@ fun PantallaPrincipal(
         modifier = modifier.fillMaxSize()
     ) {
         Text(
-            text = Constants.TITULO,
-            style = MaterialTheme.typography.titleLarge
+            text = TITULO,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(top = 30.dp)
         )
+
+        Text(TIEMPO_TOTAL_TRANSCURRIDO, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = formatSecondsToTime(180 - tiempoRestante),
+            style = MaterialTheme.typography.displayMedium
+        )
+
+        Text(TIEMPO_RESTANTE_DE_LA_SERIE, style = MaterialTheme.typography.bodyLarge)
         Text(
             text = formatSecondsToTime(tiempoRestante),
             style = MaterialTheme.typography.displayLarge
         )
 
-        NumberSelector(SEGUNDOS_POR_SET, tiempoActividad, OnTiempoActividadChanged, min = 1, max = 60)
-        NumberSelector(SEGUNDOS_DE_DESCANSO, tiempoDescanso, OnTiempoDescansoChanged, min = 0, max = 30)
-        NumberSelector(NUMERO_DE_SERIES, numeroSeries, OnNumeroSeriesChanged, min = 1, max = 20)
+        Text(DESCANSO, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = formatSecondsToTime(tiempoDescanso),
+            style = MaterialTheme.typography.displayMedium
+        )
+
+        NumberSelector(SEGUNDOS_POR_SET, tiempoActividad, OnTiempoActividadChanged, min = 60)
+        NumberSelector(SEGUNDOS_DE_DESCANSO, tiempoDescanso, OnTiempoDescansoChanged, min = 0)
+        NumberSelector(NUMERO_DE_SERIES, numeroSeries, OnNumeroSeriesChanged, min = 1)
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(onClick = onStartClick, enabled = !empezado || terminado) {
-                Text(START)
-            }
             Button(onClick = onStopClick, enabled = empezado && !terminado) {
-                Text(STOP)
+                Text("■")
+            }
+            Button(onClick = onStartClick, enabled = !empezado || terminado) {
+                Text("▶")
             }
             Button(onClick = onPauseClick, enabled = !pausado && !terminado) {
-                Text(PAUSE)
+                Text("Ⅱ")
             }
         }
     }
 }
-
 
 @Composable
 fun NumberSelector(
@@ -145,7 +159,7 @@ fun NumberSelector(
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     step: Int = 1,
-    min: Int = 0,
+    min: Int,
     max: Int = Int.MAX_VALUE
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -173,6 +187,7 @@ fun NumberSelector(
         }
     }
 }
+
 private fun formatSecondsToTime(seconds: Int): String {
     val minutes = seconds / 60
     val secs = seconds % 60

@@ -10,7 +10,7 @@ object Constants {
     const val SEGUNDOS_POR_SET = "Segundos por set"
     const val SEGUNDOS_DE_DESCANSO = "Segundos de descanso"
     const val NUMERO_DE_SERIES = "Número de series"
-    const val START = "Start"
-    const val STOP = "Stop"
-    const val PAUSE = "Pause"
+    const val TIEMPO_TOTAL_TRANSCURRIDO = "Tiempo total transcurrido"
+    const val TIEMPO_RESTANTE_DE_LA_SERIE = "Tiempo restante de la serie"
+    const val DESCANSO = "Descanso"
 }
