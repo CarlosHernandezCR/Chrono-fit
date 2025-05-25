@@ -230,7 +230,7 @@ fun NumberSelector(
             )
             Button(
                 onClick = { if (value < max) onValueChange(value + step) },
-                enabled = enabled && value < max
+                enabled = enabled && value < max 
             ) {
                 Text(MAS)
             }
