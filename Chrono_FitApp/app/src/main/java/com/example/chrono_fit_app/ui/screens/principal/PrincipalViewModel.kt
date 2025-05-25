@@ -27,7 +27,6 @@ class PrincipalViewModel : ViewModel() {
                     )
                 }
             }
-
             is PrincipalContract.PrincipalEvent.OnTiempoDescansoChanged -> {
                 _uiState.update {
                     it.copy(
@@ -36,7 +35,6 @@ class PrincipalViewModel : ViewModel() {
                     )
                 }
             }
-
             is PrincipalContract.PrincipalEvent.OnNumeroSeriesChanged -> {
                 _uiState.update {
                     it.copy(
@@ -45,7 +43,6 @@ class PrincipalViewModel : ViewModel() {
                     )
                 }
             }
-
             PrincipalContract.PrincipalEvent.Start -> start()
             PrincipalContract.PrincipalEvent.Stop -> stop()
             PrincipalContract.PrincipalEvent.Pause -> pause()
@@ -96,65 +93,72 @@ class PrincipalViewModel : ViewModel() {
             while (seriesIteracionActual > 0 && _uiState.value.empezado) {
                 _uiState.update { it.copy(enDescanso = false) }
 
-                var tiempoSerieActual =
-                    if (_uiState.value.segundosSerieRestantes in 1..duracionSerie && !_uiState.value.enDescanso) {
-                        _uiState.value.segundosSerieRestantes
-                    } else {
-                        duracionSerie
-                    }
-                _uiState.update { it.copy(segundosSerieRestantes = tiempoSerieActual) }
+                val duracionConfiguradaSerie = _uiState.value.segundosSerie
+                var tiempoSerieActualRestante = if (_uiState.value.segundosSerieRestantes in 1..duracionConfiguradaSerie && _uiState.value.pausado && !_uiState.value.enDescanso) {
+                    _uiState.value.segundosSerieRestantes
+                } else {
+                    duracionConfiguradaSerie
+                }
+                _uiState.update { it.copy(segundosSerieRestantes = tiempoSerieActualRestante) }
 
 
-                for (segundo in tiempoSerieActual downTo 1) {
-                    while (_uiState.value.pausado && _uiState.value.empezado) {
-                        delay(100L)
+                for (segundoContador in tiempoSerieActualRestante downTo 1) {
+                    if (segundoContador != tiempoSerieActualRestante) {
+                        _uiState.update { it.copy(segundosSerieRestantes = segundoContador) }
                     }
+
+                    delay(1000L)
+
                     if (!_uiState.value.empezado) break
 
                     _uiState.update {
                         it.copy(
-                            segundosSerieRestantes = segundo,
                             tiempoActividadTotal = it.tiempoActividadTotal + 1
                         )
                     }
-                    delay(1000L)
+
+                    while (_uiState.value.pausado && _uiState.value.empezado) {
+                        delay(100L)
+                    }
+                    if (!_uiState.value.empezado) break
                 }
 
                 if (!_uiState.value.empezado) break
+                _uiState.update { it.copy(segundosSerieRestantes = 0) }
+
 
                 seriesIteracionActual--
                 _uiState.update { it.copy(numeroSeriesRestantes = seriesIteracionActual) }
 
                 if (seriesIteracionActual > 0 && _uiState.value.empezado) {
-                    if (duracionDescanso > 0) {
+                    if (_uiState.value.segundosDescanso > 0) {
                         _uiState.update { it.copy(enDescanso = true) }
+                        val duracionConfiguradaDescanso = _uiState.value.segundosDescanso
+                        var tiempoDescansoActualRestante = if (_uiState.value.segundosDescansoRestantes in 1..duracionConfiguradaDescanso && _uiState.value.pausado && _uiState.value.enDescanso) {
+                            _uiState.value.segundosDescansoRestantes
+                        } else {
+                            duracionConfiguradaDescanso
+                        }
+                        _uiState.update { it.copy(segundosDescansoRestantes = tiempoDescansoActualRestante) }
 
-                        var tiempoDescansoActual =
-                            if (_uiState.value.segundosDescansoRestantes in 1..duracionDescanso && _uiState.value.enDescanso) {
-                                _uiState.value.segundosDescansoRestantes
-                            } else {
-                                duracionDescanso
+
+                        for (segundoContadorDescanso in tiempoDescansoActualRestante downTo 1) {
+                            if (segundoContadorDescanso != tiempoDescansoActualRestante) {
+                                _uiState.update { it.copy(segundosDescansoRestantes = segundoContadorDescanso) }
                             }
-                        _uiState.update { it.copy(segundosDescansoRestantes = tiempoDescansoActual) }
 
-                        for (segundo in tiempoDescansoActual downTo 1) {
+                            delay(1000L)
+                            if (!_uiState.value.empezado) break
+
                             while (_uiState.value.pausado && _uiState.value.empezado) {
                                 delay(100L)
                             }
                             if (!_uiState.value.empezado) break
-
-                            _uiState.update { it.copy(segundosDescansoRestantes = segundo) }
-                            delay(1000L)
                         }
                         if (!_uiState.value.empezado) break
-                        _uiState.update { it.copy(segundosDescansoRestantes = duracionDescanso) }
+                        _uiState.update { it.copy(segundosDescansoRestantes = 0) }
                     }
-                    _uiState.update {
-                        it.copy(
-                            enDescanso = false,
-                            segundosSerieRestantes = duracionSerie
-                        )
-                    }
+                    _uiState.update { it.copy(enDescanso = false, segundosSerieRestantes = _uiState.value.segundosSerie) }
                 }
             }
 
@@ -182,6 +186,7 @@ class PrincipalViewModel : ViewModel() {
     private fun resume() {
         if (_uiState.value.empezado && _uiState.value.pausado) {
             _uiState.update { it.copy(pausado = false) }
+            start()
         }
     }
 
