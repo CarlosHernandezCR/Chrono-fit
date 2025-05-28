@@ -149,7 +149,11 @@ class PrincipalViewModel : ViewModel() {
 
                             delay(1000L)
                             if (!_uiState.value.empezado) break
-
+                            _uiState.update {
+                                it.copy(
+                                    tiempoActividadTotal = it.tiempoActividadTotal + 1
+                                )
+                            }
                             while (_uiState.value.pausado && _uiState.value.empezado) {
                                 delay(100L)
                             }
