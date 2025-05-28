@@ -70,21 +70,21 @@ fun PrincipalActivity(
         onStopClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Stop) },
         onPauseClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Pause) },
         onResumeClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Resume) },
-        OnTiempoActividadChanged = {
+        onTiempoActividadChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnTiempoActividadChanged(
                     it
                 )
             )
         },
-        OnTiempoDescansoChanged = {
+        onTiempoDescansoChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnTiempoDescansoChanged(
                     it
                 )
             )
         },
-        OnNumeroSeriesChanged = {
+        onNumeroSeriesChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnNumeroSeriesChanged(
                     it
@@ -112,9 +112,9 @@ fun PantallaPrincipal(
     onStopClick: () -> Unit,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
-    OnTiempoActividadChanged: (Int) -> Unit,
-    OnTiempoDescansoChanged: (Int) -> Unit,
-    OnNumeroSeriesChanged: (Int) -> Unit,
+    onTiempoActividadChanged: (Int) -> Unit,
+    onTiempoDescansoChanged: (Int) -> Unit,
+    onNumeroSeriesChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -157,21 +157,21 @@ fun PantallaPrincipal(
         NumberSelector(
             SEGUNDOS_POR_SET,
             segundosSerie,
-            OnTiempoActividadChanged,
+            onTiempoActividadChanged,
             enabled = !empezado,
             min = 1
         )
         NumberSelector(
             SEGUNDOS_DE_DESCANSO,
             segundosDescanso,
-            OnTiempoDescansoChanged,
+            onTiempoDescansoChanged,
             enabled = !empezado,
             min = 0
         )
         NumberSelector(
             NUMERO_DE_SERIES,
             numeroSeries,
-            OnNumeroSeriesChanged,
+            onNumeroSeriesChanged,
             enabled = !empezado,
             min = 1
         )
@@ -183,17 +183,22 @@ fun PantallaPrincipal(
             Button(onClick = onStopClick, enabled = empezado) {
                 Text("■")
             }
-            if (!empezado || terminado) {
-                Button(onClick = onStartClick) {
-                    Text("▶")
+
+            when {
+                !empezado || terminado -> {
+                    Button(onClick = onStartClick) {
+                        Text("▶")
+                    }
                 }
-            } else if (empezado && !pausado && !terminado) {
-                Button(onClick = onPauseClick) {
-                    Text("Ⅱ")
+                empezado && !pausado && !terminado -> {
+                    Button(onClick = onPauseClick) {
+                        Text("Ⅱ")
+                    }
                 }
-            } else if (empezado && pausado && !terminado) {
-                Button(onClick = onResumeClick) {
-                    Text("►")
+                empezado && pausado && !terminado -> {
+                    Button(onClick = onResumeClick) {
+                        Text("►")
+                    }
                 }
             }
         }
@@ -230,7 +235,7 @@ fun NumberSelector(
             )
             Button(
                 onClick = { if (value < max) onValueChange(value + step) },
-                enabled = enabled && value < max 
+                enabled = enabled && value < max
             ) {
                 Text(MAS)
             }
@@ -263,8 +268,8 @@ fun PantallaPrincipalPreview() {
         onStopClick = {},
         onPauseClick = {},
         onResumeClick = {},
-        OnTiempoActividadChanged = {},
-        OnTiempoDescansoChanged = {},
-        OnNumeroSeriesChanged = {}
+        onTiempoActividadChanged = {},
+        onTiempoDescansoChanged = {},
+        onNumeroSeriesChanged = {}
     )
 }
