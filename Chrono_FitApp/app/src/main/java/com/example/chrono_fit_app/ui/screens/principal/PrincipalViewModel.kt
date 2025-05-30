@@ -54,20 +54,12 @@ class PrincipalViewModel : ViewModel() {
     }
 
     private fun start() {
-        if (timerJob?.isActive == true && !_uiState.value.pausado) {
-            return
-        }
+        if (_uiState.value.pausado || (timerJob?.isActive == true)) return
 
-        if (_uiState.value.pausado) {
-            resume()
-            return
-        }
-
-        timerJob?.cancel()
-
-        val seriesACompletar = _uiState.value.numeroSeries
-        val duracionSerie = _uiState.value.segundosSerie
-        val duracionDescanso = _uiState.value.segundosDescanso
+        val estado = _uiState.value
+        val seriesACompletar = estado.numeroSeries
+        val duracionSerie = estado.segundosSerie
+        val duracionDescanso = estado.segundosDescanso
 
         if (duracionSerie <= 0 || seriesACompletar <= 0) {
             _uiState.update { it.copy(mensaje = Constants.CONFIGURACION_INCORRECTA) }
@@ -87,82 +79,44 @@ class PrincipalViewModel : ViewModel() {
             )
         }
 
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
-            var seriesIteracionActual = _uiState.value.numeroSeriesRestantes
+            var seriesRestantes = seriesACompletar
 
-            while (seriesIteracionActual > 0 && _uiState.value.empezado) {
+            while (seriesRestantes > 0 && _uiState.value.empezado) {
                 _uiState.update { it.copy(enDescanso = false) }
 
-                val duracionConfiguradaSerie = _uiState.value.segundosSerie
-                var tiempoSerieActualRestante = if (_uiState.value.segundosSerieRestantes in 1..duracionConfiguradaSerie && _uiState.value.pausado && !_uiState.value.enDescanso) {
-                    _uiState.value.segundosSerieRestantes
-                } else {
-                    duracionConfiguradaSerie
+                val duracionSerieActual = _uiState.value.segundosSerieRestantes.takeIf {
+                    it in 1 .. _uiState.value.segundosSerie && !_uiState.value.enDescanso
+                } ?: _uiState.value.segundosSerie
+
+                _uiState.update { it.copy(segundosSerieRestantes = duracionSerieActual) }
+
+                val continua = contarTiempo(duracionSerieActual) {
+                    _uiState.update { state -> state.copy(segundosSerieRestantes = it) }
                 }
-                _uiState.update { it.copy(segundosSerieRestantes = tiempoSerieActualRestante) }
+                if (!continua) break
 
-
-                for (segundoContador in tiempoSerieActualRestante downTo 1) {
-                    if (segundoContador != tiempoSerieActualRestante) {
-                        _uiState.update { it.copy(segundosSerieRestantes = segundoContador) }
-                    }
-
-                    delay(1000L)
-
-                    if (!_uiState.value.empezado) break
-
-                    _uiState.update {
-                        it.copy(
-                            tiempoActividadTotal = it.tiempoActividadTotal + 1
-                        )
-                    }
-
-                    while (_uiState.value.pausado && _uiState.value.empezado) {
-                        delay(100L)
-                    }
-                    if (!_uiState.value.empezado) break
-                }
-
-                if (!_uiState.value.empezado) break
                 _uiState.update { it.copy(segundosSerieRestantes = 0) }
 
+                seriesRestantes--
+                _uiState.update { it.copy(numeroSeriesRestantes = seriesRestantes) }
 
-                seriesIteracionActual--
-                _uiState.update { it.copy(numeroSeriesRestantes = seriesIteracionActual) }
+                if (seriesRestantes > 0 && _uiState.value.segundosDescanso > 0) {
+                    _uiState.update { it.copy(enDescanso = true) }
 
-                if (seriesIteracionActual > 0 && _uiState.value.empezado) {
-                    if (_uiState.value.segundosDescanso > 0) {
-                        _uiState.update { it.copy(enDescanso = true) }
-                        val duracionConfiguradaDescanso = _uiState.value.segundosDescanso
-                        var tiempoDescansoActualRestante = if (_uiState.value.segundosDescansoRestantes in 1..duracionConfiguradaDescanso && _uiState.value.pausado && _uiState.value.enDescanso) {
-                            _uiState.value.segundosDescansoRestantes
-                        } else {
-                            duracionConfiguradaDescanso
-                        }
-                        _uiState.update { it.copy(segundosDescansoRestantes = tiempoDescansoActualRestante) }
+                    val duracionDescansoActual = _uiState.value.segundosDescansoRestantes.takeIf {
+                        it in 1 .. _uiState.value.segundosDescanso && _uiState.value.enDescanso
+                    } ?: _uiState.value.segundosDescanso
 
+                    _uiState.update { it.copy(segundosDescansoRestantes = duracionDescansoActual) }
 
-                        for (segundoContadorDescanso in tiempoDescansoActualRestante downTo 1) {
-                            if (segundoContadorDescanso != tiempoDescansoActualRestante) {
-                                _uiState.update { it.copy(segundosDescansoRestantes = segundoContadorDescanso) }
-                            }
-
-                            delay(1000L)
-                            if (!_uiState.value.empezado) break
-                            _uiState.update {
-                                it.copy(
-                                    tiempoActividadTotal = it.tiempoActividadTotal + 1
-                                )
-                            }
-                            while (_uiState.value.pausado && _uiState.value.empezado) {
-                                delay(100L)
-                            }
-                            if (!_uiState.value.empezado) break
-                        }
-                        if (!_uiState.value.empezado) break
-                        _uiState.update { it.copy(segundosDescansoRestantes = 0) }
+                    val continuaDescanso = contarTiempo(duracionDescansoActual) {
+                        _uiState.update { state -> state.copy(segundosDescansoRestantes = it) }
                     }
-                    _uiState.update { it.copy(enDescanso = false, segundosSerieRestantes = _uiState.value.segundosSerie) }
+                    if (!continuaDescanso) break
+
+                    _uiState.update { it.copy(segundosDescansoRestantes = 0, enDescanso = false) }
                 }
             }
 
@@ -190,7 +144,6 @@ class PrincipalViewModel : ViewModel() {
     private fun resume() {
         if (_uiState.value.empezado && _uiState.value.pausado) {
             _uiState.update { it.copy(pausado = false) }
-            start()
         }
     }
 
@@ -214,4 +167,24 @@ class PrincipalViewModel : ViewModel() {
             )
         }
     }
+    private suspend fun contarTiempo(
+        duracion: Int,
+        actualizarTiempoRestante: (Int) -> Unit
+    ): Boolean {
+        for (segundo in duracion downTo 1) {
+            while (_uiState.value.pausado && _uiState.value.empezado) {
+                delay(100L)
+            }
+            if (!_uiState.value.empezado) return false
+
+            actualizarTiempoRestante(segundo)
+            delay(1000L)
+
+            _uiState.update {
+                it.copy(tiempoActividadTotal = it.tiempoActividadTotal + 1)
+            }
+        }
+        return true
+    }
+
 }
