@@ -76,21 +76,21 @@ fun PrincipalActivity(
         onStopClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Stop) },
         onPauseClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Pause) },
         onResumeClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Resume) },
-        OnTiempoActividadChanged = {
+        onTiempoActividadChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnTiempoActividadChanged(
                     it
                 )
             )
         },
-        OnTiempoDescansoChanged = {
+        onTiempoDescansoChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnTiempoDescansoChanged(
                     it
                 )
             )
         },
-        OnNumeroSeriesChanged = {
+        onNumeroSeriesChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnNumeroSeriesChanged(
                     it
@@ -119,9 +119,9 @@ fun PantallaPrincipal(
     onStopClick: () -> Unit,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
-    OnTiempoActividadChanged: (Int) -> Unit,
-    OnTiempoDescansoChanged: (Int) -> Unit,
-    OnNumeroSeriesChanged: (Int) -> Unit,
+    onTiempoActividadChanged: (Int) -> Unit,
+    onTiempoDescansoChanged: (Int) -> Unit,
+    onNumeroSeriesChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val controlsEnabled = !empezado
@@ -154,7 +154,7 @@ fun PantallaPrincipal(
         ) {
             Button(
                 onClick = {
-                    if (segundosSerie > minSegundosSerie) OnTiempoActividadChanged(
+                    if (segundosSerie > minSegundosSerie) onTiempoActividadChanged(
                         segundosSerie - 1
                     )
                 },
@@ -175,7 +175,7 @@ fun PantallaPrincipal(
                     .padding(horizontal = 6.dp)
             )
             Button(
-                onClick = { OnTiempoActividadChanged(segundosSerie + 1) },
+                onClick = { onTiempoActividadChanged(segundosSerie + 1) },
                 enabled = controlsEnabled
             ) {
                 Text(MAS)
@@ -190,7 +190,7 @@ fun PantallaPrincipal(
         ) {
             Button(
                 onClick = {
-                    if (segundosDescanso > minSegundosDescanso) OnTiempoDescansoChanged(
+                    if (segundosDescanso > minSegundosDescanso) onTiempoDescansoChanged(
                         segundosDescanso - 1
                     )
                 },
@@ -211,7 +211,7 @@ fun PantallaPrincipal(
                     .padding(horizontal = 6.dp)
             )
             Button(
-                onClick = { OnTiempoDescansoChanged(segundosDescanso + 1) },
+                onClick = { onTiempoDescansoChanged(segundosDescanso + 1) },
                 enabled = controlsEnabled
             ) {
                 Text(MAS)
@@ -223,7 +223,7 @@ fun PantallaPrincipal(
         NumberSelector(
             NUMERO_DE_SERIES,
             numeroSeries,
-            OnNumeroSeriesChanged,
+            onNumeroSeriesChanged,
             enabled = controlsEnabled,
             min = 1
         )
@@ -322,8 +322,8 @@ fun PantallaPrincipalPreview() {
         onStopClick = {},
         onPauseClick = {},
         onResumeClick = {},
-        OnTiempoActividadChanged = {},
-        OnTiempoDescansoChanged = {},
-        OnNumeroSeriesChanged = {}
+        onTiempoActividadChanged = {},
+        onTiempoDescansoChanged = {},
+        onNumeroSeriesChanged = {}
     )
 }
