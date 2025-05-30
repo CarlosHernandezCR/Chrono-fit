@@ -27,8 +27,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chrono_fit_app.common.Constants.MAS
 import com.example.chrono_fit_app.common.Constants.MENOS
 import com.example.chrono_fit_app.common.Constants.NUMERO_DE_SERIES
+import com.example.chrono_fit_app.common.Constants.PAUSE
+import com.example.chrono_fit_app.common.Constants.PLAY
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_DE_DESCANSO
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
+import com.example.chrono_fit_app.common.Constants.STOP
 import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL_TRANSCURRIDO
 import com.example.chrono_fit_app.common.Constants.TITULO
 import kotlinx.coroutines.launch
@@ -98,6 +101,7 @@ fun PrincipalActivity(
     )
 }
 
+
 @Composable
 fun PantallaPrincipal(
     tiempoActividadTotal: Int,
@@ -142,7 +146,7 @@ fun PantallaPrincipal(
             text = formatSecondsToTime(tiempoActividadTotal),
             style = MaterialTheme.typography.displayMedium,
         )
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.padding(6.dp))
         Text(SEGUNDOS_POR_SET, style = MaterialTheme.typography.headlineMedium)
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -168,7 +172,7 @@ fun PantallaPrincipal(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .width(200.dp)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 6.dp)
             )
             Button(
                 onClick = { OnTiempoActividadChanged(segundosSerie + 1) },
@@ -177,7 +181,7 @@ fun PantallaPrincipal(
                 Text(MAS)
             }
         }
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.padding(6.dp))
 
         Text(SEGUNDOS_DE_DESCANSO, style = MaterialTheme.typography.headlineMedium)
         Row(
@@ -204,7 +208,7 @@ fun PantallaPrincipal(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .width(200.dp)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 6.dp)
             )
             Button(
                 onClick = { OnTiempoDescansoChanged(segundosDescanso + 1) },
@@ -214,7 +218,7 @@ fun PantallaPrincipal(
             }
         }
 
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.padding(6.dp))
 
         NumberSelector(
             NUMERO_DE_SERIES,
@@ -230,26 +234,26 @@ fun PantallaPrincipal(
             modifier = Modifier.padding(top = 24.dp)
         ) {
             Button(onClick = onStopClick, enabled = empezado) {
-                Text("■")
+                Text(STOP)
             }
             if (!empezado || terminado) {
                 Button(onClick = onStartClick) {
-                    Text("▶")
+                    Text(PLAY)
                 }
             } else if (empezado && !pausado && !terminado) {
                 Button(onClick = onPauseClick) {
-                    Text("Ⅱ")
+                    Text(PAUSE)
                 }
             } else if (empezado && pausado && !terminado) {
                 Button(onClick = onResumeClick) {
-                    Text("►")
+                    Text(PLAY)
                 }
             }
         }
         Text(
             "Series restantes: $numeroSeriesRestantes / $numeroSeries",
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = 6.dp)
         )
     }
 }
@@ -267,7 +271,7 @@ fun NumberSelector(
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label, style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.padding(6.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
