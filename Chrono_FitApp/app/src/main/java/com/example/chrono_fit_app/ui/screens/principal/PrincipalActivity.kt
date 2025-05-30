@@ -1,3 +1,5 @@
+package com.example.chrono_fit_app.ui.screens.principal
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,8 +31,6 @@ import com.example.chrono_fit_app.common.Constants.SEGUNDOS_DE_DESCANSO
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
 import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL_TRANSCURRIDO
 import com.example.chrono_fit_app.common.Constants.TITULO
-import com.example.chrono_fit_app.ui.screens.principal.PrincipalContract
-import com.example.chrono_fit_app.ui.screens.principal.PrincipalViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -133,17 +133,17 @@ fun PantallaPrincipal(
     ) {
         Text(
             text = TITULO,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
         )
 
-        Text(TIEMPO_TOTAL_TRANSCURRIDO, style = MaterialTheme.typography.bodyLarge)
+        Text(TIEMPO_TOTAL_TRANSCURRIDO, style = MaterialTheme.typography.headlineMedium)
         Text(
             text = formatSecondsToTime(tiempoActividadTotal),
             style = MaterialTheme.typography.displayMedium,
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        Text(SEGUNDOS_POR_SET, style = MaterialTheme.typography.bodyLarge)
+        Text(SEGUNDOS_POR_SET, style = MaterialTheme.typography.headlineMedium)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -179,7 +179,7 @@ fun PantallaPrincipal(
         }
         Spacer(modifier = Modifier.padding(8.dp))
 
-        Text(SEGUNDOS_DE_DESCANSO, style = MaterialTheme.typography.bodyLarge)
+        Text(SEGUNDOS_DE_DESCANSO, style = MaterialTheme.typography.headlineMedium)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -200,7 +200,7 @@ fun PantallaPrincipal(
                 } else {
                     formatSecondsToTime(segundosDescanso)
                 },
-                style = MaterialTheme.typography.displayMedium,
+                style = MaterialTheme.typography.displayLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .width(200.dp)
@@ -266,7 +266,7 @@ fun NumberSelector(
     max: Int = Int.MAX_VALUE
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, style = MaterialTheme.typography.bodyLarge)
+        Text(label, style = MaterialTheme.typography.headlineMedium)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
