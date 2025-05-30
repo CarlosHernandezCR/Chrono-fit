@@ -1,10 +1,10 @@
-package com.example.chrono_fit_app.ui.screens.principal
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,6 +29,8 @@ import com.example.chrono_fit_app.common.Constants.SEGUNDOS_DE_DESCANSO
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
 import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL_TRANSCURRIDO
 import com.example.chrono_fit_app.common.Constants.TITULO
+import com.example.chrono_fit_app.ui.screens.principal.PrincipalContract
+import com.example.chrono_fit_app.ui.screens.principal.PrincipalViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -70,21 +73,21 @@ fun PrincipalActivity(
         onStopClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Stop) },
         onPauseClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Pause) },
         onResumeClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Resume) },
-        onTiempoActividadChanged = {
+        OnTiempoActividadChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnTiempoActividadChanged(
                     it
                 )
             )
         },
-        onTiempoDescansoChanged = {
+        OnTiempoDescansoChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnTiempoDescansoChanged(
                     it
                 )
             )
         },
-        onNumeroSeriesChanged = {
+        OnNumeroSeriesChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnNumeroSeriesChanged(
                     it
@@ -112,97 +115,142 @@ fun PantallaPrincipal(
     onStopClick: () -> Unit,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
-    onTiempoActividadChanged: (Int) -> Unit,
-    onTiempoDescansoChanged: (Int) -> Unit,
-    onNumeroSeriesChanged: (Int) -> Unit,
+    OnTiempoActividadChanged: (Int) -> Unit,
+    OnTiempoDescansoChanged: (Int) -> Unit,
+    OnNumeroSeriesChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val controlsEnabled = !empezado
+    val minSegundosSerie = 1
+    val minSegundosDescanso = 0
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = modifier.fillMaxSize()
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         Text(
             text = TITULO,
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(top = 30.dp)
+            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
         )
 
         Text(TIEMPO_TOTAL_TRANSCURRIDO, style = MaterialTheme.typography.bodyLarge)
         Text(
             text = formatSecondsToTime(tiempoActividadTotal),
-            style = MaterialTheme.typography.displayMedium
+            style = MaterialTheme.typography.displayMedium,
         )
-
+        Spacer(modifier = Modifier.padding(8.dp))
         Text(SEGUNDOS_POR_SET, style = MaterialTheme.typography.bodyLarge)
-        Text(
-            text = if (empezado && !enDescanso) {
-                formatSecondsToTime(segundosSerieRestantes)
-            } else {
-                formatSecondsToTime(segundosSerie)
-            },
-            style = MaterialTheme.typography.displayLarge
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                onClick = {
+                    if (segundosSerie > minSegundosSerie) OnTiempoActividadChanged(
+                        segundosSerie - 1
+                    )
+                },
+                enabled = controlsEnabled && segundosSerie > minSegundosSerie
+            ) {
+                Text(MENOS)
+            }
+            Text(
+                text = if (empezado && !enDescanso) {
+                    formatSecondsToTime(segundosSerieRestantes)
+                } else {
+                    formatSecondsToTime(segundosSerie)
+                },
+                style = MaterialTheme.typography.displayLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(horizontal = 8.dp)
+            )
+            Button(
+                onClick = { OnTiempoActividadChanged(segundosSerie + 1) },
+                enabled = controlsEnabled
+            ) {
+                Text(MAS)
+            }
+        }
+        Spacer(modifier = Modifier.padding(8.dp))
 
         Text(SEGUNDOS_DE_DESCANSO, style = MaterialTheme.typography.bodyLarge)
-        Text(
-            text = if (empezado && enDescanso) {
-                formatSecondsToTime(segundosDescansoRestantes)
-            } else {
-                formatSecondsToTime(segundosDescanso)
-            },
-            style = MaterialTheme.typography.displayMedium
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                onClick = {
+                    if (segundosDescanso > minSegundosDescanso) OnTiempoDescansoChanged(
+                        segundosDescanso - 1
+                    )
+                },
+                enabled = controlsEnabled && segundosDescanso > minSegundosDescanso
+            ) {
+                Text(MENOS)
+            }
+            Text(
+                text = if (empezado && enDescanso) {
+                    formatSecondsToTime(segundosDescansoRestantes)
+                } else {
+                    formatSecondsToTime(segundosDescanso)
+                },
+                style = MaterialTheme.typography.displayMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(horizontal = 8.dp)
+            )
+            Button(
+                onClick = { OnTiempoDescansoChanged(segundosDescanso + 1) },
+                enabled = controlsEnabled
+            ) {
+                Text(MAS)
+            }
+        }
 
-        NumberSelector(
-            SEGUNDOS_POR_SET,
-            segundosSerie,
-            onTiempoActividadChanged,
-            enabled = !empezado,
-            min = 1
-        )
-        NumberSelector(
-            SEGUNDOS_DE_DESCANSO,
-            segundosDescanso,
-            onTiempoDescansoChanged,
-            enabled = !empezado,
-            min = 0
-        )
+        Spacer(modifier = Modifier.padding(8.dp))
+
         NumberSelector(
             NUMERO_DE_SERIES,
             numeroSeries,
-            onNumeroSeriesChanged,
-            enabled = !empezado,
+            OnNumeroSeriesChanged,
+            enabled = controlsEnabled,
             min = 1
         )
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 24.dp)
         ) {
             Button(onClick = onStopClick, enabled = empezado) {
                 Text("■")
             }
-
-            when {
-                !empezado || terminado -> {
-                    Button(onClick = onStartClick) {
-                        Text("▶")
-                    }
+            if (!empezado || terminado) {
+                Button(onClick = onStartClick) {
+                    Text("▶")
                 }
-                empezado && !pausado && !terminado -> {
-                    Button(onClick = onPauseClick) {
-                        Text("Ⅱ")
-                    }
+            } else if (empezado && !pausado && !terminado) {
+                Button(onClick = onPauseClick) {
+                    Text("Ⅱ")
                 }
-                empezado && pausado && !terminado -> {
-                    Button(onClick = onResumeClick) {
-                        Text("►")
-                    }
+            } else if (empezado && pausado && !terminado) {
+                Button(onClick = onResumeClick) {
+                    Text("►")
                 }
             }
         }
-        Text("Series restantes: $numeroSeriesRestantes / $numeroSeries")
+        Text(
+            "Series restantes: $numeroSeriesRestantes / $numeroSeries",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(top = 8.dp)
+        )
     }
 }
 
@@ -231,7 +279,8 @@ fun NumberSelector(
             }
             Text(
                 text = value.toString(),
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center
             )
             Button(
                 onClick = { if (value < max) onValueChange(value + step) },
@@ -254,10 +303,10 @@ private fun formatSecondsToTime(seconds: Int): String {
 fun PantallaPrincipalPreview() {
     PantallaPrincipal(
         tiempoActividadTotal = 0,
-        segundosSerie = 3,
-        segundosSerieRestantes = 3,
-        segundosDescanso = 3,
-        segundosDescansoRestantes = 3,
+        segundosSerie = 60,
+        segundosSerieRestantes = 60,
+        segundosDescanso = 30,
+        segundosDescansoRestantes = 30,
         numeroSeries = 3,
         numeroSeriesRestantes = 3,
         empezado = false,
@@ -268,8 +317,8 @@ fun PantallaPrincipalPreview() {
         onStopClick = {},
         onPauseClick = {},
         onResumeClick = {},
-        onTiempoActividadChanged = {},
-        onTiempoDescansoChanged = {},
-        onNumeroSeriesChanged = {}
+        OnTiempoActividadChanged = {},
+        OnTiempoDescansoChanged = {},
+        OnNumeroSeriesChanged = {}
     )
 }
