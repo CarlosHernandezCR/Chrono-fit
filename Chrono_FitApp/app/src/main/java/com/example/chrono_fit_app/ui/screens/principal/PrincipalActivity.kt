@@ -7,8 +7,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -24,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chrono_fit_app.common.Constants.FORMATO_TIEMPO
 import com.example.chrono_fit_app.common.Constants.MAS
 import com.example.chrono_fit_app.common.Constants.MENOS
 import com.example.chrono_fit_app.common.Constants.NUMERO_DE_SERIES
@@ -228,28 +236,16 @@ fun PantallaPrincipal(
             min = 1
         )
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 24.dp)
-        ) {
-            Button(onClick = onStopClick, enabled = empezado) {
-                Text(STOP)
-            }
-            if (!empezado || terminado) {
-                Button(onClick = onStartClick) {
-                    Text(PLAY)
-                }
-            } else if (empezado && !pausado && !terminado) {
-                Button(onClick = onPauseClick) {
-                    Text(PAUSE)
-                }
-            } else if (empezado && pausado && !terminado) {
-                Button(onClick = onResumeClick) {
-                    Text(PLAY)
-                }
-            }
-        }
+        BotonesEntrenamiento(
+            empezado = empezado,
+            pausado = pausado,
+            terminado = terminado,
+            onStartClick = onStartClick,
+            onPauseClick = onPauseClick,
+            onResumeClick = onResumeClick,
+            onStopClick = onStopClick
+        )
+
         Text(
             "Series restantes: $numeroSeriesRestantes / $numeroSeries",
             style = MaterialTheme.typography.titleLarge,
@@ -300,7 +296,67 @@ fun NumberSelector(
 private fun formatSecondsToTime(seconds: Int): String {
     val minutes = seconds / 60
     val secs = seconds % 60
-    return "%02d:%02d".format(minutes, secs)
+    return FORMATO_TIEMPO.format(minutes, secs)
+}
+
+@Composable
+fun BotonesEntrenamiento(
+    empezado: Boolean,
+    pausado: Boolean,
+    terminado: Boolean,
+    onStartClick: () -> Unit,
+    onPauseClick: () -> Unit,
+    onResumeClick: () -> Unit,
+    onStopClick: () -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(top = 24.dp)
+    ) {
+        OutlinedButton(
+            onClick = onStopClick,
+            enabled = empezado,
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.error
+            )
+        ) {
+            Icon(Icons.Default.Stop, contentDescription = STOP)
+        }
+
+        when {
+            !empezado || terminado -> {
+                Button(
+                    onClick = onStartClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = PLAY)
+                }
+            }
+            empezado && !pausado && !terminado -> {
+                Button(
+                    onClick = onPauseClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Icon(Icons.Default.Pause, contentDescription = PAUSE)
+                }
+            }
+            empezado && pausado && !terminado -> {
+                Button(
+                    onClick = onResumeClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = PLAY)
+                }
+            }
+        }
+    }
 }
 
 @Composable

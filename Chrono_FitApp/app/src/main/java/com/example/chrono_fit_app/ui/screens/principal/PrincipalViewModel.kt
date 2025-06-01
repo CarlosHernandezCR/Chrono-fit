@@ -47,9 +47,7 @@ class PrincipalViewModel : ViewModel() {
             PrincipalContract.PrincipalEvent.Stop -> stop()
             PrincipalContract.PrincipalEvent.Pause -> pause()
             PrincipalContract.PrincipalEvent.Resume -> resume()
-            PrincipalContract.PrincipalEvent.MensajeMostrado -> {
-                _uiState.update { it.copy(mensaje = null) }
-            }
+            PrincipalContract.PrincipalEvent.MensajeMostrado -> { _uiState.update { it.copy(mensaje = null) } }
         }
     }
 

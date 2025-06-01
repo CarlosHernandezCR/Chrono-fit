@@ -14,4 +14,5 @@ object Constants {
     const val PLAY = "►"
     const val PAUSE = "Ⅱ"
     const val STOP = "■"
+    const val FORMATO_TIEMPO = "%02d:%02d"
 }
