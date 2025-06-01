@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -168,7 +170,7 @@ fun PantallaPrincipal(
                 },
                 enabled = controlsEnabled && segundosSerie > minSegundosSerie
             ) {
-                Text(MENOS)
+                Icon(imageVector = Icons.Filled.Remove, contentDescription = MENOS)
             }
             Text(
                 text = if (empezado && !enDescanso) {
@@ -186,7 +188,7 @@ fun PantallaPrincipal(
                 onClick = { onTiempoActividadChanged(segundosSerie + 1) },
                 enabled = controlsEnabled
             ) {
-                Text(MAS)
+                Icon(imageVector = Icons.Filled.Add, contentDescription = MAS)
             }
         }
         Spacer(modifier = Modifier.padding(6.dp))
@@ -204,7 +206,7 @@ fun PantallaPrincipal(
                 },
                 enabled = controlsEnabled && segundosDescanso > minSegundosDescanso
             ) {
-                Text(MENOS)
+                Icon(imageVector = Icons.Filled.Remove, contentDescription = MENOS)
             }
             Text(
                 text = if (empezado && enDescanso) {
@@ -222,7 +224,7 @@ fun PantallaPrincipal(
                 onClick = { onTiempoDescansoChanged(segundosDescanso + 1) },
                 enabled = controlsEnabled
             ) {
-                Text(MAS)
+                Icon(imageVector = Icons.Filled.Add, contentDescription = MAS)
             }
         }
 
@@ -276,7 +278,7 @@ fun NumberSelector(
                 onClick = { if (value > min) onValueChange(value - step) },
                 enabled = enabled && value > min
             ) {
-                Text(MENOS)
+                Icon(imageVector = Icons.Filled.Remove, contentDescription = "Aumentar tiempo")
             }
             Text(
                 text = value.toString(),
@@ -287,7 +289,7 @@ fun NumberSelector(
                 onClick = { if (value < max) onValueChange(value + step) },
                 enabled = enabled && value < max
             ) {
-                Text(MAS)
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Aumentar tiempo")
             }
         }
     }
