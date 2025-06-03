@@ -206,7 +206,7 @@ fun PantallaPrincipal(
             onStopClick = onStopClick
         )
 
-        if (empezado || terminado) {
+        if (empezado) {
             Text(
                 "Series restantes: $numeroSeriesRestantes / $numeroSeries",
                 style = MaterialTheme.typography.titleLarge,
