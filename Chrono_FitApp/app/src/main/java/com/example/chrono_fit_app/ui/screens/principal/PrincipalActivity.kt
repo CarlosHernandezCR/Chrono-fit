@@ -1,11 +1,16 @@
 package com.example.chrono_fit_app.ui.screens.principal
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -15,6 +20,7 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -45,6 +51,7 @@ import com.example.chrono_fit_app.common.Constants.STOP
 import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL
 import com.example.chrono_fit_app.common.Constants.TITULO
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun PrincipalActivity(
@@ -134,9 +141,6 @@ fun PantallaPrincipal(
     onNumeroSeriesChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val controlsEnabled = !empezado
-    val minSegundosSerie = 1
-    val minSegundosDescanso = 0
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -156,7 +160,7 @@ fun PantallaPrincipal(
             text = formatSecondsToTime(tiempoActividadTotal),
             style = MaterialTheme.typography.displayMedium,
         )
-        
+
         Spacer(modifier = Modifier.padding(6.dp))
 
         ContadorDeTiempoConfigurable(
@@ -211,6 +215,7 @@ fun PantallaPrincipal(
         }
     }
 }
+
 @Composable
 fun ContadorDeTiempoConfigurable(
     titulo: String,
@@ -221,13 +226,25 @@ fun ContadorDeTiempoConfigurable(
     onChange: (Int) -> Unit,
     min: Int
 ) {
+    val progreso = if (iniciado && enEsteEstado && valorInicial > 0) {
+        valorRestante.toFloat() / valorInicial
+    } else 1f
+
+    val animatedProgress by animateFloatAsState(targetValue = progreso)
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(titulo, style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.padding(6.dp))
+        Text(
+            titulo,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             if (!iniciado) {
                 Button(
@@ -238,18 +255,35 @@ fun ContadorDeTiempoConfigurable(
                 }
             }
 
-            Text(
-                text = if (iniciado && enEsteEstado) {
-                    formatSecondsToTime(valorRestante)
-                } else {
-                    formatSecondsToTime(valorInicial)
-                },
-                style = MaterialTheme.typography.displayLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(horizontal = 6.dp)
-            )
+            if (iniciado && enEsteEstado) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(width = 150.dp, height = 120.dp)
+                        .padding(horizontal = 6.dp)
+                ) {
+                    CircularProgressIndicator(
+                        progress = { animatedProgress },
+                        modifier = Modifier.fillMaxSize(),
+                        strokeWidth = 5.dp
+                    )
+                    Text(
+                        text = formatSecondsToTime(valorRestante),
+                        style = MaterialTheme.typography.displaySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.offset(y = 8.dp)
+                    )
+                }
+            } else {
+                Text(
+                    text = formatSecondsToTime(valorInicial),
+                    style = MaterialTheme.typography.displaySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .width(150.dp)
+                        .padding(8.dp)
+                )
+            }
 
             if (!iniciado) {
                 Button(
@@ -262,6 +296,10 @@ fun ContadorDeTiempoConfigurable(
         }
     }
 }
+
+
+
+
 
 @Composable
 fun NumeroSeries(
