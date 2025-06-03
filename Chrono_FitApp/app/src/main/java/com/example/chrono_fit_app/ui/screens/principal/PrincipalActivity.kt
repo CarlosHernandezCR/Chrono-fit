@@ -42,7 +42,7 @@ import com.example.chrono_fit_app.common.Constants.PLAY
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_DE_DESCANSO
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
 import com.example.chrono_fit_app.common.Constants.STOP
-import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL_TRANSCURRIDO
+import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL
 import com.example.chrono_fit_app.common.Constants.TITULO
 import kotlinx.coroutines.launch
 
@@ -151,92 +151,46 @@ fun PantallaPrincipal(
             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
         )
 
-        Text(TIEMPO_TOTAL_TRANSCURRIDO, style = MaterialTheme.typography.headlineMedium)
+        Text(TIEMPO_TOTAL, style = MaterialTheme.typography.headlineMedium)
         Text(
             text = formatSecondsToTime(tiempoActividadTotal),
             style = MaterialTheme.typography.displayMedium,
         )
-        Spacer(modifier = Modifier.padding(6.dp))
-        Text(SEGUNDOS_POR_SET, style = MaterialTheme.typography.headlineMedium)
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Button(
-                onClick = {
-                    if (segundosSerie > minSegundosSerie) onTiempoActividadChanged(
-                        segundosSerie - 1
-                    )
-                },
-                enabled = controlsEnabled && segundosSerie > minSegundosSerie
-            ) {
-                Icon(imageVector = Icons.Filled.Remove, contentDescription = MENOS)
-            }
-            Text(
-                text = if (empezado && !enDescanso) {
-                    formatSecondsToTime(segundosSerieRestantes)
-                } else {
-                    formatSecondsToTime(segundosSerie)
-                },
-                style = MaterialTheme.typography.displayLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(horizontal = 6.dp)
-            )
-            Button(
-                onClick = { onTiempoActividadChanged(segundosSerie + 1) },
-                enabled = controlsEnabled
-            ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = MAS)
-            }
-        }
+        
         Spacer(modifier = Modifier.padding(6.dp))
 
-        Text(SEGUNDOS_DE_DESCANSO, style = MaterialTheme.typography.headlineMedium)
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Button(
-                onClick = {
-                    if (segundosDescanso > minSegundosDescanso) onTiempoDescansoChanged(
-                        segundosDescanso - 1
-                    )
-                },
-                enabled = controlsEnabled && segundosDescanso > minSegundosDescanso
-            ) {
-                Icon(imageVector = Icons.Filled.Remove, contentDescription = MENOS)
-            }
-            Text(
-                text = if (empezado && enDescanso) {
-                    formatSecondsToTime(segundosDescansoRestantes)
-                } else {
-                    formatSecondsToTime(segundosDescanso)
-                },
-                style = MaterialTheme.typography.displayLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(horizontal = 6.dp)
-            )
-            Button(
-                onClick = { onTiempoDescansoChanged(segundosDescanso + 1) },
-                enabled = controlsEnabled
-            ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = MAS)
-            }
-        }
-
-        Spacer(modifier = Modifier.padding(6.dp))
-
-        NumberSelector(
-            NUMERO_DE_SERIES,
-            numeroSeries,
-            onNumeroSeriesChanged,
-            enabled = controlsEnabled,
+        ContadorDeTiempoConfigurable(
+            titulo = SEGUNDOS_POR_SET,
+            valorInicial = segundosSerie,
+            valorRestante = segundosSerieRestantes,
+            iniciado = empezado,
+            enEsteEstado = !enDescanso,
+            onChange = onTiempoActividadChanged,
             min = 1
         )
+
+        Spacer(modifier = Modifier.padding(6.dp))
+
+        ContadorDeTiempoConfigurable(
+            titulo = SEGUNDOS_DE_DESCANSO,
+            valorInicial = segundosDescanso,
+            valorRestante = segundosDescansoRestantes,
+            iniciado = empezado,
+            enEsteEstado = enDescanso,
+            onChange = onTiempoDescansoChanged,
+            min = 0
+        )
+
+
+        if (!empezado) {
+            NumeroSeries(
+                NUMERO_DE_SERIES,
+                numeroSeries,
+                onNumeroSeriesChanged,
+                enabled = true,
+                min = 1
+            )
+        }
 
         BotonesEntrenamiento(
             empezado = empezado,
@@ -248,16 +202,69 @@ fun PantallaPrincipal(
             onStopClick = onStopClick
         )
 
-        Text(
-            "Series restantes: $numeroSeriesRestantes / $numeroSeries",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(top = 6.dp)
-        )
+        if (empezado || terminado) {
+            Text(
+                "Series restantes: $numeroSeriesRestantes / $numeroSeries",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(top = 6.dp)
+            )
+        }
+    }
+}
+@Composable
+fun ContadorDeTiempoConfigurable(
+    titulo: String,
+    valorInicial: Int,
+    valorRestante: Int,
+    iniciado: Boolean,
+    enEsteEstado: Boolean,
+    onChange: (Int) -> Unit,
+    min: Int
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(titulo, style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.padding(6.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (!iniciado) {
+                Button(
+                    onClick = { if (valorInicial > min) onChange(valorInicial - 1) },
+                    enabled = valorInicial > min
+                ) {
+                    Icon(imageVector = Icons.Filled.Remove, contentDescription = MENOS)
+                }
+            }
+
+            Text(
+                text = if (iniciado && enEsteEstado) {
+                    formatSecondsToTime(valorRestante)
+                } else {
+                    formatSecondsToTime(valorInicial)
+                },
+                style = MaterialTheme.typography.displayLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(horizontal = 6.dp)
+            )
+
+            if (!iniciado) {
+                Button(
+                    onClick = { onChange(valorInicial + 1) },
+                    enabled = true
+                ) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = MAS)
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun NumberSelector(
+fun NumeroSeries(
     label: String,
     value: Int,
     onValueChange: (Int) -> Unit,
@@ -278,7 +285,7 @@ fun NumberSelector(
                 onClick = { if (value > min) onValueChange(value - step) },
                 enabled = enabled && value > min
             ) {
-                Icon(imageVector = Icons.Filled.Remove, contentDescription = "Aumentar tiempo")
+                Icon(imageVector = Icons.Filled.Remove, contentDescription = MENOS)
             }
             Text(
                 text = value.toString(),
@@ -289,7 +296,7 @@ fun NumberSelector(
                 onClick = { if (value < max) onValueChange(value + step) },
                 enabled = enabled && value < max
             ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Aumentar tiempo")
+                Icon(imageVector = Icons.Filled.Add, contentDescription = MAS)
             }
         }
     }
@@ -337,6 +344,7 @@ fun BotonesEntrenamiento(
                     Icon(Icons.Default.PlayArrow, contentDescription = PLAY)
                 }
             }
+
             empezado && !pausado && !terminado -> {
                 Button(
                     onClick = onPauseClick,
@@ -347,6 +355,7 @@ fun BotonesEntrenamiento(
                     Icon(Icons.Default.Pause, contentDescription = PAUSE)
                 }
             }
+
             empezado && pausado && !terminado -> {
                 Button(
                     onClick = onResumeClick,
