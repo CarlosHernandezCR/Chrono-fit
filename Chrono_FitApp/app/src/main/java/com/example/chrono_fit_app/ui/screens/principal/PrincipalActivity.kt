@@ -1,6 +1,8 @@
 package com.example.chrono_fit_app.ui.screens.principal
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,8 +14,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Remove
@@ -22,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarDuration
@@ -31,14 +37,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chrono_fit_app.common.Constants.CONFIRMAR
+import com.example.chrono_fit_app.common.Constants.DOSPUNTOS
 import com.example.chrono_fit_app.common.Constants.FORMATO_TIEMPO
 import com.example.chrono_fit_app.common.Constants.MAS
 import com.example.chrono_fit_app.common.Constants.MENOS
@@ -216,6 +231,7 @@ fun PantallaPrincipal(
     }
 }
 
+
 @Composable
 fun ContadorDeTiempoConfigurable(
     titulo: String,
@@ -232,14 +248,23 @@ fun ContadorDeTiempoConfigurable(
 
     val animatedProgress by animateFloatAsState(targetValue = progreso)
 
+    var editando by remember { mutableStateOf(false) }
+    var minutos by remember { mutableStateOf((valorInicial / 60).toString()) }
+    var segundos by remember { mutableStateOf((valorInicial % 60).toString().padStart(2, '0')) }
+
+    fun totalSegundos(): Int {
+        val m = minutos.toIntOrNull() ?: 0
+        val s = segundos.toIntOrNull() ?: 0
+        return m * 60 + s
+    }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             titulo,
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 4.dp)
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -249,7 +274,7 @@ fun ContadorDeTiempoConfigurable(
             if (!iniciado) {
                 Button(
                     onClick = { if (valorInicial > min) onChange(valorInicial - 1) },
-                    enabled = valorInicial > min
+                    enabled = valorInicial > min,
                 ) {
                     Icon(imageVector = Icons.Filled.Remove, contentDescription = MENOS)
                 }
@@ -275,14 +300,79 @@ fun ContadorDeTiempoConfigurable(
                     )
                 }
             } else {
-                Text(
-                    text = formatSecondsToTime(valorInicial),
-                    style = MaterialTheme.typography.displaySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .width(150.dp)
-                        .padding(8.dp)
-                )
+                if (editando) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(horizontal = 30.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            BasicTextField(
+                                value = minutos,
+                                onValueChange = {
+                                    if (it.all { c -> c.isDigit() }) minutos = it
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                textStyle = MaterialTheme.typography.displaySmall.copy(
+                                    fontSize = 30.sp,
+                                    color = Color.White
+                                ),
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                                modifier = Modifier
+                                    .width(35.dp)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                            )
+
+                            Text(
+                                text = DOSPUNTOS,
+                                style = MaterialTheme.typography.displaySmall,
+                                modifier = Modifier.padding(horizontal = 4.dp)
+                            )
+
+                            BasicTextField(
+                                value = segundos,
+                                onValueChange = {
+                                    if (it.all { c -> c.isDigit() } && (it.toIntOrNull() ?: 0) in 0..59)
+                                        segundos = it.padStart(2, '0')
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                textStyle = MaterialTheme.typography.displaySmall.copy(
+                                    fontSize = 30.sp,
+                                    color = Color.White
+                                ),
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                                modifier = Modifier
+                                    .width(35.dp)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                editando = false
+                                onChange(totalSegundos())
+                            },
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .size(40.dp)
+                        ) {
+                            Icon(imageVector = Icons.Filled.Check, contentDescription = CONFIRMAR)
+                        }
+                    }
+                } else {
+                    Text(
+                        text = formatSecondsToTime(valorInicial),
+                        style = MaterialTheme.typography.displaySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .width(150.dp)
+                            .padding(8.dp)
+                            .clickable {
+                                minutos = (valorInicial / 60).toString()
+                                segundos = (valorInicial % 60).toString().padStart(2, '0')
+                                editando = true
+                            }
+                    )
+                }
             }
 
             if (!iniciado) {
@@ -296,6 +386,7 @@ fun ContadorDeTiempoConfigurable(
         }
     }
 }
+
 
 
 
@@ -338,12 +429,6 @@ fun NumeroSeries(
             }
         }
     }
-}
-
-private fun formatSecondsToTime(seconds: Int): String {
-    val minutes = seconds / 60
-    val secs = seconds % 60
-    return FORMATO_TIEMPO.format(minutes, secs)
 }
 
 @Composable
@@ -406,6 +491,14 @@ fun BotonesEntrenamiento(
             }
         }
     }
+}
+
+
+
+private fun formatSecondsToTime(seconds: Int): String {
+    val minutes = seconds / 60
+    val secs = seconds % 60
+    return FORMATO_TIEMPO.format(minutes, secs)
 }
 
 @Composable
