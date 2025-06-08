@@ -16,4 +16,5 @@ object Constants {
     const val STOP = "■"
     const val FORMATO_TIEMPO = "%02d:%02d"
     const val CONFIRMAR = "Confirmar"
+    const val DOSPUNTOS = ":"
 }
