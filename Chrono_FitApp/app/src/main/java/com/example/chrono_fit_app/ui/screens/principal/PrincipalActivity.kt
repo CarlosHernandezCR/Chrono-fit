@@ -28,6 +28,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarDuration
@@ -62,8 +63,10 @@ import com.example.chrono_fit_app.common.Constants.PAUSE
 import com.example.chrono_fit_app.common.Constants.PLAY
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_DE_DESCANSO
 import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
+import com.example.chrono_fit_app.common.Constants.SERIES_RESTANTES
 import com.example.chrono_fit_app.common.Constants.STOP
 import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL
+import com.example.chrono_fit_app.common.Constants.TIEMPO_TRANSCURRIDO
 import com.example.chrono_fit_app.common.Constants.TITULO
 import kotlinx.coroutines.launch
 
@@ -223,10 +226,11 @@ fun PantallaPrincipal(
 
         if (empezado) {
             Text(
-                "Series restantes: $numeroSeriesRestantes / $numeroSeries",
+                "$SERIES_RESTANTES $numeroSeriesRestantes / $numeroSeries",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(top = 6.dp)
             )
+            LinearProgressIndicator(progress = { numeroSeriesRestantes / numeroSeries.toFloat() })
         }
     }
 }
