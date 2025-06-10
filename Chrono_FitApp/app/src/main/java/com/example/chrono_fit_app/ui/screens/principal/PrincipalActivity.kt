@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -46,7 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,7 +67,6 @@ import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
 import com.example.chrono_fit_app.common.Constants.SERIES_RESTANTES
 import com.example.chrono_fit_app.common.Constants.STOP
 import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL
-import com.example.chrono_fit_app.common.Constants.TIEMPO_TRANSCURRIDO
 import com.example.chrono_fit_app.common.Constants.TITULO
 import kotlinx.coroutines.launch
 
@@ -107,6 +107,7 @@ fun PrincipalActivity(
         pausado = uiState.pausado,
         enDescanso = uiState.enDescanso,
         terminado = uiState.terminado,
+        tiempoRestanteTotal = uiState.tiempoTotalRestante,
         onStartClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Start) },
         onStopClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Stop) },
         onPauseClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Pause) },
@@ -146,6 +147,7 @@ fun PantallaPrincipal(
     segundosDescansoRestantes: Int,
     numeroSeries: Int,
     numeroSeriesRestantes: Int,
+    tiempoRestanteTotal: Int,
     empezado: Boolean,
     pausado: Boolean,
     enDescanso: Boolean,
@@ -230,11 +232,30 @@ fun PantallaPrincipal(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(top = 6.dp)
             )
-            LinearProgressIndicator(progress = { numeroSeriesRestantes / numeroSeries.toFloat() })
+            BarraProgresoTotal(segundosSerie, segundosDescanso, numeroSeries, tiempoRestanteTotal)
         }
     }
 }
 
+@Composable
+fun BarraProgresoTotal(
+    segundosSerie: Int,
+    segundosDescanso: Int,
+    numeroSeries: Int,
+    tiempoRestanteTotal: Int
+) {
+    val tiempoTotal = ((segundosSerie + segundosDescanso) * numeroSeries) - segundosDescanso
+    val progresoTotal = tiempoRestanteTotal.toFloat() / tiempoTotal.toFloat()
+    LinearProgressIndicator(
+        progress = { progresoTotal },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp),
+        color = MaterialTheme.colorScheme.primary,
+        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        strokeCap = StrokeCap.Round
+    )
+}
 
 @Composable
 fun ContadorDeTiempoConfigurable(
@@ -392,10 +413,6 @@ fun ContadorDeTiempoConfigurable(
 }
 
 
-
-
-
-
 @Composable
 fun NumeroSeries(
     label: String,
@@ -498,7 +515,6 @@ fun BotonesEntrenamiento(
 }
 
 
-
 private fun formatSecondsToTime(seconds: Int): String {
     val minutes = seconds / 60
     val secs = seconds % 60
@@ -516,6 +532,7 @@ fun PantallaPrincipalPreview() {
         segundosDescansoRestantes = 30,
         numeroSeries = 3,
         numeroSeriesRestantes = 3,
+        tiempoRestanteTotal = 180,
         empezado = false,
         pausado = false,
         enDescanso = false,

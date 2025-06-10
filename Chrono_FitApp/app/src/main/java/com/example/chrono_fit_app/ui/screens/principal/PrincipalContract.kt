@@ -10,6 +10,7 @@ interface PrincipalContract {
         val segundosDescansoRestantes: Int = segundosDescanso,
         val numeroSeries: Int = 1,
         val numeroSeriesRestantes: Int = numeroSeries,
+        val tiempoTotalRestante: Int = 0,
         val mensaje: String? = null,
         val pausado: Boolean = false,
         val empezado: Boolean = false,

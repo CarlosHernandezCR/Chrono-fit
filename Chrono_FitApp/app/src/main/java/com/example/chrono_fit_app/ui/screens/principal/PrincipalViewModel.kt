@@ -73,7 +73,8 @@ class PrincipalViewModel : ViewModel() {
                 numeroSeriesRestantes = seriesACompletar,
                 segundosSerieRestantes = duracionSerie,
                 segundosDescansoRestantes = duracionDescanso,
-                tiempoActividadTotal = 0
+                tiempoActividadTotal = 0,
+                tiempoTotalRestante = duracionSerie * seriesACompletar + duracionDescanso * (seriesACompletar - 1)
             )
         }
 
@@ -179,7 +180,10 @@ class PrincipalViewModel : ViewModel() {
             delay(1000L)
 
             _uiState.update {
-                it.copy(tiempoActividadTotal = it.tiempoActividadTotal + 1)
+                it.copy(
+                    tiempoActividadTotal = it.tiempoActividadTotal + 1,
+                    tiempoTotalRestante = it.tiempoTotalRestante - 1
+                )
             }
         }
         return true
