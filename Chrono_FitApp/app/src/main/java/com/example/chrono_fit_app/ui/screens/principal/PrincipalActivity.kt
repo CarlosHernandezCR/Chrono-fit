@@ -334,7 +334,9 @@ fun ContadorDeTiempoConfigurable(
                             BasicTextField(
                                 value = minutos,
                                 onValueChange = {
-                                    if (it.all { c -> c.isDigit() }) minutos = it
+                                    if (it.all { c -> c.isDigit() } && it.length <= 2) {
+                                        minutos = it
+                                    }
                                 },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 textStyle = MaterialTheme.typography.displaySmall.copy(
@@ -356,8 +358,12 @@ fun ContadorDeTiempoConfigurable(
                             BasicTextField(
                                 value = segundos,
                                 onValueChange = {
-                                    if (it.all { c -> c.isDigit() } && (it.toIntOrNull() ?: 0) in 0..59)
-                                        segundos = it.padStart(2, '0')
+                                    if (it.all { c -> c.isDigit() } && it.length <= 2) {
+                                        val seg = it.toIntOrNull() ?: 0
+                                        if (it.isEmpty() || seg in 0..59) {
+                                            segundos = it
+                                        }
+                                    }
                                 },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 textStyle = MaterialTheme.typography.displaySmall.copy(
@@ -374,7 +380,11 @@ fun ContadorDeTiempoConfigurable(
                         IconButton(
                             onClick = {
                                 editando = false
-                                onChange(totalSegundos())
+                                val m = minutos.ifEmpty { "0" }.padStart(2, '0').toInt()
+                                val s = segundos.ifEmpty { "0" }.padStart(2, '0').toInt()
+                                minutos = m.toString().padStart(2, '0')
+                                segundos = s.toString().padStart(2, '0')
+                                onChange(m * 60 + s)
                             },
                             modifier = Modifier
                                 .padding(top = 8.dp)
@@ -382,18 +392,19 @@ fun ContadorDeTiempoConfigurable(
                         ) {
                             Icon(imageVector = Icons.Filled.Check, contentDescription = CONFIRMAR)
                         }
+
                     }
                 } else {
                     Text(
-                        text = formatSecondsToTime(valorInicial),
+                        text = minutos.padStart(2, '0') + ":" + segundos.padStart(2, '0'),
                         style = MaterialTheme.typography.displaySmall,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .width(150.dp)
                             .padding(8.dp)
                             .clickable {
-                                minutos = (valorInicial / 60).toString()
-                                segundos = (valorInicial % 60).toString().padStart(2, '0')
+                                minutos = ""
+                                segundos = ""
                                 editando = true
                             }
                     )
