@@ -17,4 +17,5 @@ object Constants {
     const val FORMATO_TIEMPO = "%02d:%02d"
     const val CONFIRMAR = "Confirmar"
     const val DOSPUNTOS = ":"
+    const val SERIES_RESTANTES = "Series restantes:"
 }
