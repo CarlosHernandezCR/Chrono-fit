@@ -1,6 +1,8 @@
 package com.example.chrono_fit_app.ui.screens.principal
 
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -246,8 +248,17 @@ fun BarraProgresoTotal(
 ) {
     val tiempoTotal = ((segundosSerie + segundosDescanso) * numeroSeries) - segundosDescanso
     val progresoTotal = tiempoRestanteTotal.toFloat() / tiempoTotal.toFloat()
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = progresoTotal,
+        animationSpec = tween(
+            durationMillis = 500,
+            easing = LinearEasing
+        )
+    )
+
     LinearProgressIndicator(
-        progress = { progresoTotal },
+        progress = { animatedProgress },
         modifier = Modifier
             .fillMaxWidth()
             .height(8.dp),
