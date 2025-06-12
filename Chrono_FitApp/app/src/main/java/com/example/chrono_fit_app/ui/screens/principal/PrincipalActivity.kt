@@ -277,12 +277,6 @@ fun ContadorDeTiempoConfigurable(
     var minutos by remember { mutableStateOf((valorInicial / 60).toString()) }
     var segundos by remember { mutableStateOf((valorInicial % 60).toString().padStart(2, '0')) }
 
-    fun totalSegundos(): Int {
-        val m = minutos.toIntOrNull() ?: 0
-        val s = segundos.toIntOrNull() ?: 0
-        return m * 60 + s
-    }
-
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             titulo,
