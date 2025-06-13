@@ -193,7 +193,6 @@ fun PantallaPrincipal(
             iniciado = empezado,
             enEsteEstado = !enDescanso,
             onChange = onTiempoActividadChanged,
-            min = 1
         )
 
         Spacer(modifier = Modifier.padding(6.dp))
@@ -205,7 +204,6 @@ fun PantallaPrincipal(
             iniciado = empezado,
             enEsteEstado = enDescanso,
             onChange = onTiempoDescansoChanged,
-            min = 0
         )
 
 
@@ -282,7 +280,6 @@ fun ContadorDeTiempoConfigurable(
     iniciado: Boolean,
     enEsteEstado: Boolean,
     onChange: (Int) -> Unit,
-    min: Int
 ) {
     val progreso = if (iniciado && enEsteEstado && valorInicial > 0) {
         valorRestante.toFloat() / valorInicial
@@ -307,15 +304,6 @@ fun ContadorDeTiempoConfigurable(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            if (!iniciado) {
-                Button(
-                    onClick = { if (valorInicial > min) onChange(valorInicial - 1) },
-                    enabled = valorInicial > min,
-                ) {
-                    Icon(imageVector = Icons.Filled.Remove, contentDescription = MENOS)
-                }
-            }
-
             if (iniciado && enEsteEstado) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -419,15 +407,6 @@ fun ContadorDeTiempoConfigurable(
                                 editando = true
                             }
                     )
-                }
-            }
-
-            if (!iniciado) {
-                Button(
-                    onClick = { onChange(valorInicial + 1) },
-                    enabled = true
-                ) {
-                    Icon(imageVector = Icons.Filled.Add, contentDescription = MAS)
                 }
             }
         }
