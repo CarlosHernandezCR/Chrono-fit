@@ -250,6 +250,15 @@ fun BarraProgresoTotal(
 
     val progresoAnimado = remember { Animatable(progresoObjetivo) }
 
+    // Determinar si estamos en una serie o en descanso
+    val segundosPorBloque = segundosSerie + segundosDescanso
+    val tiempoTranscurrido = tiempoTotal - tiempoRestanteTotal
+    val posicionActualEnBloque = tiempoTranscurrido % segundosPorBloque
+
+    val esDescanso = posicionActualEnBloque >= segundosSerie
+
+    val colorBarra = if (esDescanso) Color(0xFF4CAF50) else Color(0xFFF44336) // Verde o rojo
+
     LaunchedEffect(progresoObjetivo) {
         progresoAnimado.animateTo(
             targetValue = progresoObjetivo,
@@ -265,11 +274,12 @@ fun BarraProgresoTotal(
         modifier = Modifier
             .fillMaxWidth()
             .height(8.dp),
-        color = MaterialTheme.colorScheme.primary,
+        color = colorBarra,
         trackColor = MaterialTheme.colorScheme.surfaceVariant,
         strokeCap = StrokeCap.Round
     )
 }
+
 
 
 @Composable
