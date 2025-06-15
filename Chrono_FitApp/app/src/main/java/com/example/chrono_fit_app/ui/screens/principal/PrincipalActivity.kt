@@ -250,7 +250,6 @@ fun BarraProgresoTotal(
 
     val progresoAnimado = remember { Animatable(progresoObjetivo) }
 
-    // Determinar si estamos en una serie o en descanso
     val segundosPorBloque = segundosSerie + segundosDescanso
     val tiempoTranscurrido = tiempoTotal - tiempoRestanteTotal
     val posicionActualEnBloque = tiempoTranscurrido % segundosPorBloque
