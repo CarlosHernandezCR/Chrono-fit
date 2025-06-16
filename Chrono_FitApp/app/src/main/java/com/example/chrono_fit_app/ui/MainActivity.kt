@@ -1,4 +1,4 @@
-package com.example.chrono_fit_app
+package com.example.chrono_fit_app.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,7 +12,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.chrono_fit_app.ui.screens.principal.PrincipalActivity
 import com.example.chrono_fit_app.ui.theme.Chrono_FitAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,12 +22,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             Chrono_FitAppTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.Companion.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        PrincipalActivity(modifier = Modifier
-                            .padding(innerPadding))
+                    Scaffold(modifier = Modifier.Companion.fillMaxSize()) { innerPadding ->
+                        PrincipalActivity(
+                            modifier = Modifier.Companion
+                                .padding(innerPadding)
+                        )
                     }
                 }
 

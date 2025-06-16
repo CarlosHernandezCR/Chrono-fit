@@ -2,7 +2,9 @@ package com.example.chrono_fit_app.ui.screens.principal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chrono_fit_app.common.Constants
+import com.example.chrono_fit_app.common.constantes.Constants
+import com.example.chrono_fit_app.domain.audio.MusicPlayerI
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,8 +12,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PrincipalViewModel : ViewModel() {
+@HiltViewModel
+class PrincipalViewModel @Inject constructor(
+    private val soundPlayer: MusicPlayerI
+) : ViewModel() {
     private val _uiState = MutableStateFlow(PrincipalContract.PrincipalState())
     val uiState: StateFlow<PrincipalContract.PrincipalState> = _uiState.asStateFlow()
 
@@ -177,6 +183,13 @@ class PrincipalViewModel : ViewModel() {
             if (!_uiState.value.empezado) return false
 
             actualizarTiempoRestante(segundo)
+
+            if (segundo == 1) {
+                soundPlayer.playPitidoFinal()
+            } else if(segundo == 2 || segundo == 3) {
+                soundPlayer.playPitido()
+            }
+
             delay(1000L)
 
             _uiState.update {
@@ -188,5 +201,6 @@ class PrincipalViewModel : ViewModel() {
         }
         return true
     }
+
 
 }

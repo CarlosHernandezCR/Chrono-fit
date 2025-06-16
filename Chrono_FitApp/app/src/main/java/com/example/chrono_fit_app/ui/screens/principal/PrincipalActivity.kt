@@ -56,29 +56,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chrono_fit_app.common.Constants.CONFIRMAR
-import com.example.chrono_fit_app.common.Constants.DOSPUNTOS
-import com.example.chrono_fit_app.common.Constants.FORMATO_TIEMPO
-import com.example.chrono_fit_app.common.Constants.MAS
-import com.example.chrono_fit_app.common.Constants.MENOS
-import com.example.chrono_fit_app.common.Constants.NUMERO_DE_SERIES
-import com.example.chrono_fit_app.common.Constants.PAUSE
-import com.example.chrono_fit_app.common.Constants.PLAY
-import com.example.chrono_fit_app.common.Constants.SEGUNDOS_DE_DESCANSO
-import com.example.chrono_fit_app.common.Constants.SEGUNDOS_POR_SET
-import com.example.chrono_fit_app.common.Constants.SERIES_RESTANTES
-import com.example.chrono_fit_app.common.Constants.STOP
-import com.example.chrono_fit_app.common.Constants.TIEMPO_TOTAL
-import com.example.chrono_fit_app.common.Constants.TITULO
+import com.example.chrono_fit_app.common.constantes.Constants.CONFIRMAR
+import com.example.chrono_fit_app.common.constantes.Constants.DOSPUNTOS
+import com.example.chrono_fit_app.common.constantes.Constants.FORMATO_TIEMPO
+import com.example.chrono_fit_app.common.constantes.Constants.MAS
+import com.example.chrono_fit_app.common.constantes.Constants.MENOS
+import com.example.chrono_fit_app.common.constantes.Constants.NUMERO_DE_SERIES
+import com.example.chrono_fit_app.common.constantes.Constants.PAUSE
+import com.example.chrono_fit_app.common.constantes.Constants.PLAY
+import com.example.chrono_fit_app.common.constantes.Constants.SEGUNDOS_DE_DESCANSO
+import com.example.chrono_fit_app.common.constantes.Constants.SEGUNDOS_POR_SET
+import com.example.chrono_fit_app.common.constantes.Constants.SERIES_RESTANTES
+import com.example.chrono_fit_app.common.constantes.Constants.STOP
+import com.example.chrono_fit_app.common.constantes.Constants.TIEMPO_TOTAL
+import com.example.chrono_fit_app.common.constantes.Constants.TITULO
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun PrincipalActivity(
+    viewModel: PrincipalViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    val viewModel: PrincipalViewModel = viewModel()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val showSnackbar: (String) -> Unit = { message ->

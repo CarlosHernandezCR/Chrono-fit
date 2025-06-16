@@ -1,4 +1,4 @@
-package com.example.chrono_fit_app.common
+package com.example.chrono_fit_app.common.constantes
 
 object Constants {
     const val TITULO = "Chronofit"
