@@ -57,7 +57,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chrono_fit_app.common.constantes.Constants.CONFIRMAR
 import com.example.chrono_fit_app.common.constantes.Constants.DOSPUNTOS
 import com.example.chrono_fit_app.common.constantes.Constants.FORMATO_TIEMPO
@@ -72,7 +71,6 @@ import com.example.chrono_fit_app.common.constantes.Constants.SERIES_RESTANTES
 import com.example.chrono_fit_app.common.constantes.Constants.STOP
 import com.example.chrono_fit_app.common.constantes.Constants.TIEMPO_TOTAL
 import com.example.chrono_fit_app.common.constantes.Constants.TITULO
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @Composable
