@@ -41,6 +41,28 @@ chrono_fit_app/
 - │       └── principal/ # Pantalla principal, Events, State y ViewModel
 - └── MainActivity.kt # Entrada principal
 
+## Funcionamiento
+
+1. Al abrir la aplicación, se mostrará el logo:
+
+   ![Logo](images/logo.png)
+
+2. A continuación, accederás a la pantalla principal:
+
+   ![Pantalla Principal](images/main.png)
+
+3. Podrás ajustar el número de series y los tiempos pulsando sobre los valores numéricos, escribiendo los nuevos valores y confirmando:
+
+   ![Ajuste de tiempo](images/ajuste_tiempo.png)
+
+4. Presiona el botón de Play (▶) para comenzar la cuenta atrás:
+
+   ![En Activo](images/en_activo.png)
+
+5. Sonarán los pitidos durante los últimos 3 segundos. Al finalizar, se activará el modo de descanso:
+
+   ![En Descanso](images/en_descanso.png)
+
 
 ## Instalación 🔧
 
