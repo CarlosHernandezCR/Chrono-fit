@@ -47,7 +47,7 @@ chrono_fit_app/
 1. Clona este repositorio:
    ```bash
    git clone https://github.com/CarlosHernandezCR/Chrono_fit_app.git
-2.Abre el proyecto en Android Studio.
+2. Abre el proyecto en Android Studio.
 3. Ejecuta en un dispositivo físico o emulador con Android 6.0 o superior.
 
 Recursos de sonido 🔊
