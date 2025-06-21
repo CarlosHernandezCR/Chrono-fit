@@ -28,18 +28,18 @@ Las aplicaciones que habian en la playstore tenian anuncios o eran de pago, asi 
 ## Estructura del proyecto 📁
 
 chrono_fit_app/
-├── common/
-│ └── constantes/ # Constantes de la app
-├── di/
-│ └── AudioModule.kt # Módulo Hilt para la inyección del reproductor
-├── domain/
-│ └── audio/ # Interfaz SoundPlayerI
-├── infrastructure/
-│ └── audio/ # Implementación con SoundPool
-├── ui/
-│ └── screens/
-│       └── principal/ # Pantalla principal, Events, State y ViewModel
-└── MainActivity.kt # Entrada principal
+- ├── common/
+- │ └── constantes/ # Constantes de la app
+- ├── di/
+- │ └── AudioModule.kt # Módulo Hilt para la inyección del reproductor
+- ├── domain/
+- │ └── audio/ # Interfaz SoundPlayerI
+- ├── infrastructure/
+- │ └── audio/ # Implementación con SoundPool
+- ├── ui/
+- │ └── screens/
+- │       └── principal/ # Pantalla principal, Events, State y ViewModel
+- └── MainActivity.kt # Entrada principal
 
 
 ## Instalación 🔧
