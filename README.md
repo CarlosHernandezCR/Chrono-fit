@@ -45,11 +45,11 @@ chrono_fit_app/
 
 1. Al abrir la aplicación, se mostrará el logo:
 
-   ![Logo](Images/logo.png)
+   ![Logo](Images/Logo.png)
 
 2. A continuación, accederás a la pantalla principal:
 
-   ![Pantalla Principal](Images/main.png)
+   ![Pantalla Principal](Images/Main.png)
 
 3. Podrás ajustar el número de series y los tiempos pulsando sobre los valores numéricos, escribiendo los nuevos valores y confirmando:
 
