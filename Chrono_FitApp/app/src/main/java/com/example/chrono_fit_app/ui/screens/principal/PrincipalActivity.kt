@@ -45,7 +45,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,25 +72,14 @@ import com.example.chrono_fit_app.common.constantes.Constants.SERIES_RESTANTES
 import com.example.chrono_fit_app.common.constantes.Constants.STOP
 import com.example.chrono_fit_app.common.constantes.Constants.TIEMPO_TOTAL
 import com.example.chrono_fit_app.common.constantes.Constants.TITULO
-import kotlinx.coroutines.launch
 
 @Composable
 fun PrincipalActivity(
     viewModel: PrincipalViewModel = hiltViewModel(),
+    showSnackbar: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-    val showSnackbar: (String) -> Unit = { message ->
-        scope.launch {
-            snackbarHostState.showSnackbar(
-                message,
-                duration = SnackbarDuration.Short
-            )
-        }
-    }
     val uiState by viewModel.uiState.collectAsState()
-
     LaunchedEffect(uiState.mensaje) {
         uiState.mensaje?.let {
             showSnackbar(it)
