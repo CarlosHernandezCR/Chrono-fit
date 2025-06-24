@@ -25,6 +25,7 @@ interface PrincipalContract {
         data object Start : PrincipalEvent
         data object Stop : PrincipalEvent
         data object Pause : PrincipalEvent
+        data object Reset : PrincipalEvent
         data object Resume : PrincipalEvent
         data object MensajeMostrado : PrincipalEvent
     }

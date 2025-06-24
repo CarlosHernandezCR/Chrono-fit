@@ -54,6 +54,7 @@ class PrincipalViewModel @Inject constructor(
             PrincipalContract.PrincipalEvent.Pause -> pause()
             PrincipalContract.PrincipalEvent.Resume -> resume()
             PrincipalContract.PrincipalEvent.MensajeMostrado -> { _uiState.update { it.copy(mensaje = null) } }
+            PrincipalContract.PrincipalEvent.Reset -> { _uiState.update { it.copy(tiempoActividadTotal = 0) } }
         }
     }
 

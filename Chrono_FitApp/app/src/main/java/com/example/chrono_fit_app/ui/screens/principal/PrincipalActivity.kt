@@ -65,6 +65,7 @@ import com.example.chrono_fit_app.common.constantes.Constants.MENOS
 import com.example.chrono_fit_app.common.constantes.Constants.NUMERO_DE_SERIES
 import com.example.chrono_fit_app.common.constantes.Constants.PAUSE
 import com.example.chrono_fit_app.common.constantes.Constants.PLAY
+import com.example.chrono_fit_app.common.constantes.Constants.RESET
 import com.example.chrono_fit_app.common.constantes.Constants.SEGUNDOS_DE_DESCANSO
 import com.example.chrono_fit_app.common.constantes.Constants.SEGUNDOS_POR_SET
 import com.example.chrono_fit_app.common.constantes.Constants.SERIES_RESTANTES
@@ -114,6 +115,7 @@ fun PrincipalActivity(
         onStopClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Stop) },
         onPauseClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Pause) },
         onResumeClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Resume) },
+        onResetClick = { viewModel.handleEvent(PrincipalContract.PrincipalEvent.Reset) },
         onTiempoActividadChanged = {
             viewModel.handleEvent(
                 PrincipalContract.PrincipalEvent.OnTiempoActividadChanged(
@@ -140,6 +142,7 @@ fun PrincipalActivity(
 }
 
 
+
 @Composable
 fun PantallaPrincipal(
     tiempoActividadTotal: Int,
@@ -158,6 +161,7 @@ fun PantallaPrincipal(
     onStopClick: () -> Unit,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
+    onResetClick: () -> Unit,
     onTiempoActividadChanged: (Int) -> Unit,
     onTiempoDescansoChanged: (Int) -> Unit,
     onNumeroSeriesChanged: (Int) -> Unit,
@@ -223,8 +227,10 @@ fun PantallaPrincipal(
             onStartClick = onStartClick,
             onPauseClick = onPauseClick,
             onResumeClick = onResumeClick,
-            onStopClick = onStopClick
+            onStopClick = onStopClick,
+            onResetClick = onResetClick
         )
+
 
         if (empezado) {
             Text(
@@ -469,7 +475,8 @@ fun BotonesEntrenamiento(
     onStartClick: () -> Unit,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
-    onStopClick: () -> Unit
+    onStopClick: () -> Unit,
+    onResetClick: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -495,6 +502,11 @@ fun BotonesEntrenamiento(
                     )
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = PLAY)
+                }
+                if (terminado) {
+                    Button(onClick = onResetClick) {
+                        Text(RESET)
+                    }
                 }
             }
 
@@ -550,6 +562,7 @@ fun PantallaPrincipalPreview() {
         onStopClick = {},
         onPauseClick = {},
         onResumeClick = {},
+        onResetClick = {},
         onTiempoActividadChanged = {},
         onTiempoDescansoChanged = {},
         onNumeroSeriesChanged = {}

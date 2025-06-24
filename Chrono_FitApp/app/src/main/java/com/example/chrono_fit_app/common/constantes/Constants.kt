@@ -18,4 +18,5 @@ object Constants {
     const val CONFIRMAR = "Confirmar"
     const val DOSPUNTOS = ":"
     const val SERIES_RESTANTES = "Series restantes:"
+    const val RESET = "RESET"
 }
