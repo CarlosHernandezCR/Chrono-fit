@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -224,6 +225,7 @@ fun PantallaPrincipal(
             empezado = empezado,
             pausado = pausado,
             terminado = terminado,
+            tiempoActividadTotal = tiempoActividadTotal,
             onStartClick = onStartClick,
             onPauseClick = onPauseClick,
             onResumeClick = onResumeClick,
@@ -472,6 +474,7 @@ fun BotonesEntrenamiento(
     empezado: Boolean,
     pausado: Boolean,
     terminado: Boolean,
+    tiempoActividadTotal: Int,
     onStartClick: () -> Unit,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
@@ -503,11 +506,12 @@ fun BotonesEntrenamiento(
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = PLAY)
                 }
-                if (terminado) {
+                if (terminado && tiempoActividadTotal > 0) {
                     Button(onClick = onResetClick) {
-                        Text(RESET)
+                        Icon(Icons.Default.Restore, contentDescription = RESET)
                     }
                 }
+
             }
 
             empezado && !pausado && !terminado -> {
