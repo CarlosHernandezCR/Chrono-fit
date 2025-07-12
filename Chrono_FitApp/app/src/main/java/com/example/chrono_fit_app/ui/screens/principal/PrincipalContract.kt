@@ -4,11 +4,11 @@ interface PrincipalContract {
 
     data class PrincipalState(
         val tiempoActividadTotal: Int = 0,
-        val segundosSerie: Int = 60,
+        val segundosSerie: Int = 40,
         val segundosSerieRestantes: Int = segundosSerie,
-        val segundosDescanso: Int = 30,
+        val segundosDescanso: Int = 20,
         val segundosDescansoRestantes: Int = segundosDescanso,
-        val numeroSeries: Int = 1,
+        val numeroSeries: Int = 15 ,
         val numeroSeriesRestantes: Int = numeroSeries,
         val tiempoTotalRestante: Int = 0,
         val mensaje: String? = null,

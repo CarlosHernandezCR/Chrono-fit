@@ -184,6 +184,7 @@ fun PantallaPrincipal(
             valorRestante = segundosSerieRestantes,
             iniciado = empezado,
             enEsteEstado = !enDescanso,
+            pausado = pausado,
             onChange = onTiempoActividadChanged,
         )
 
@@ -195,6 +196,7 @@ fun PantallaPrincipal(
             valorRestante = segundosDescansoRestantes,
             iniciado = empezado,
             enEsteEstado = enDescanso,
+            pausado = pausado,
             onChange = onTiempoDescansoChanged,
         )
 
@@ -204,7 +206,7 @@ fun PantallaPrincipal(
                 NUMERO_DE_SERIES,
                 numeroSeries,
                 onNumeroSeriesChanged,
-                enabled = true,
+                enabled = !empezado && !pausado,
                 min = 1
             )
         }
@@ -282,6 +284,7 @@ fun ContadorDeTiempoConfigurable(
     valorInicial: Int,
     valorRestante: Int,
     iniciado: Boolean,
+    pausado: Boolean,
     enEsteEstado: Boolean,
     onChange: (Int) -> Unit,
 ) {
@@ -328,7 +331,7 @@ fun ContadorDeTiempoConfigurable(
                     )
                 }
             } else {
-                if (editando) {
+                if (editando && !iniciado && !pausado) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.padding(horizontal = 30.dp)) {
                         Row(
@@ -405,7 +408,7 @@ fun ContadorDeTiempoConfigurable(
                         modifier = Modifier
                             .width(150.dp)
                             .padding(8.dp)
-                            .clickable {
+                            .clickable(enabled = !iniciado && !pausado) {
                                 minutos = ""
                                 segundos = ""
                                 editando = true
