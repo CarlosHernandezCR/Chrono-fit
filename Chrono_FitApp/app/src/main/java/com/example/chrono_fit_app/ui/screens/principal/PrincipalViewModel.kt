@@ -87,6 +87,7 @@ class PrincipalViewModel @Inject constructor(
 
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
+            delay(3000)
             var seriesRestantes = seriesACompletar
 
             while (seriesRestantes > 0 && _uiState.value.empezado) {

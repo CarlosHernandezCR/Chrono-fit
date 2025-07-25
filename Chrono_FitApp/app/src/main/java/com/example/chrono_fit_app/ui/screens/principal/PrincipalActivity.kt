@@ -36,8 +36,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,6 +70,7 @@ import com.example.chrono_fit_app.common.constantes.Constants.SERIES_RESTANTES
 import com.example.chrono_fit_app.common.constantes.Constants.STOP
 import com.example.chrono_fit_app.common.constantes.Constants.TIEMPO_TOTAL
 import com.example.chrono_fit_app.common.constantes.Constants.TITULO
+import kotlinx.coroutines.delay
 
 @Composable
 fun PrincipalActivity(
@@ -156,81 +155,100 @@ fun PantallaPrincipal(
     onNumeroSeriesChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = TITULO,
-            style = MaterialTheme.typography.displayMedium,
-            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
-        )
-
-        Text(TIEMPO_TOTAL, style = MaterialTheme.typography.headlineMedium)
-        Text(
-            text = formatSecondsToTime(tiempoActividadTotal),
-            style = MaterialTheme.typography.displayMedium,
-        )
-
-        Spacer(modifier = Modifier.padding(6.dp))
-
-        ContadorDeTiempoConfigurable(
-            titulo = SEGUNDOS_POR_SET,
-            valorInicial = segundosSerie,
-            valorRestante = segundosSerieRestantes,
-            iniciado = empezado,
-            enEsteEstado = !enDescanso,
-            pausado = pausado,
-            onChange = onTiempoActividadChanged,
-        )
-
-        Spacer(modifier = Modifier.padding(6.dp))
-
-        ContadorDeTiempoConfigurable(
-            titulo = SEGUNDOS_DE_DESCANSO,
-            valorInicial = segundosDescanso,
-            valorRestante = segundosDescansoRestantes,
-            iniciado = empezado,
-            enEsteEstado = enDescanso,
-            pausado = pausado,
-            onChange = onTiempoDescansoChanged,
-        )
-
-
-        if (!empezado) {
-            NumeroSeries(
-                NUMERO_DE_SERIES,
-                numeroSeries,
-                onNumeroSeriesChanged,
-                enabled = !empezado && !pausado,
-                min = 1
+    var cuentaAtras by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(empezado) {
+        if (empezado && !pausado) {
+            listOf("3", "2", "1", "¡TIEMPO!").forEach {
+                cuentaAtras = it
+                delay(1000L)
+            }
+            cuentaAtras = null
+        }
+    }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        cuentaAtras?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.displayLarge,
+                color = Color.Red,
+                textAlign = TextAlign.Center
             )
         }
-
-        BotonesEntrenamiento(
-            empezado = empezado,
-            pausado = pausado,
-            terminado = terminado,
-            tiempoActividadTotal = tiempoActividadTotal,
-            onStartClick = onStartClick,
-            onPauseClick = onPauseClick,
-            onResumeClick = onResumeClick,
-            onStopClick = onStopClick,
-            onResetClick = onResetClick
-        )
-
-
-        if (empezado) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
             Text(
-                "$SERIES_RESTANTES $numeroSeriesRestantes / $numeroSeries",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(top = 6.dp)
+                text = TITULO,
+                style = MaterialTheme.typography.displayMedium,
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
             )
-            BarraProgresoTotal(segundosSerie, segundosDescanso, numeroSeries, tiempoRestanteTotal)
+
+            Text(TIEMPO_TOTAL, style = MaterialTheme.typography.headlineMedium)
+            Text(
+                text = formatSecondsToTime(tiempoActividadTotal),
+                style = MaterialTheme.typography.displayMedium,
+            )
+
+            Spacer(modifier = Modifier.padding(6.dp))
+
+            ContadorDeTiempoConfigurable(
+                titulo = SEGUNDOS_POR_SET,
+                valorInicial = segundosSerie,
+                valorRestante = segundosSerieRestantes,
+                iniciado = empezado,
+                enEsteEstado = !enDescanso,
+                pausado = pausado,
+                onChange = onTiempoActividadChanged,
+            )
+
+            Spacer(modifier = Modifier.padding(6.dp))
+
+            ContadorDeTiempoConfigurable(
+                titulo = SEGUNDOS_DE_DESCANSO,
+                valorInicial = segundosDescanso,
+                valorRestante = segundosDescansoRestantes,
+                iniciado = empezado,
+                enEsteEstado = enDescanso,
+                pausado = pausado,
+                onChange = onTiempoDescansoChanged,
+            )
+
+
+            if (!empezado) {
+                NumeroSeries(
+                    NUMERO_DE_SERIES,
+                    numeroSeries,
+                    onNumeroSeriesChanged,
+                    enabled = !empezado && !pausado,
+                    min = 1
+                )
+            }
+
+            BotonesEntrenamiento(
+                empezado = empezado,
+                pausado = pausado,
+                terminado = terminado,
+                tiempoActividadTotal = tiempoActividadTotal,
+                onStartClick = onStartClick,
+                onPauseClick = onPauseClick,
+                onResumeClick = onResumeClick,
+                onStopClick = onStopClick,
+                onResetClick = onResetClick
+            )
+
+
+            if (empezado) {
+                Text(
+                    "$SERIES_RESTANTES $numeroSeriesRestantes / $numeroSeries",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(top = 6.dp)
+                )
+                BarraProgresoTotal(segundosSerie, segundosDescanso, numeroSeries, tiempoRestanteTotal)
+            }
         }
     }
 }
